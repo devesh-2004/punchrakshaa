@@ -1,0 +1,18 @@
+<svg width="567" height="98" viewBox="0 0 567 98" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="mask0_198_1017" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="567" height="98">
+<path d="M0 98L-4.28372e-06 2.28882e-05L567 -1.89617e-06L567 98L0 98Z" fill="#D9D9D9"/>
+</mask>
+<g mask="url(#mask0_198_1017)">
+</g>
+<mask id="mask1_198_1017" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="29" width="567" height="51">
+<path d="M0 80L-2.22928e-06 29L567 29L567 80L0 80Z" fill="#D9D9D9"/>
+</mask>
+<g mask="url(#mask1_198_1017)">
+<rect y="486.611" width="486.611" height="567" rx="25" transform="rotate(-90 0 486.611)" fill="#0CAE59"/>
+<path d="M285.372 124.65L474.369 142.15L550.519 202.097L565.996 211.033L541.78 206.937L474.369 222.451L169.989 202.097L110.85 197.38L29.792 187.575L1.66992 178.019L5.80552 174.419L1.66992 144.632L1.66992 93.746L5.80552 85.4304L43.0259 64.7035L122.843 85.4304L261.386 85.4304L285.372 124.65Z" fill="#065C2F"/>
+<foreignObject x="-215" y="-215" width="997" height="916.611"><div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(107.5px);clip-path:url(#bgblur_0_198_1017_clip_path);height:100%;width:100%"></div></foreignObject><rect data-figma-bg-blur-radius="215" y="486.611" width="486.611" height="567" transform="rotate(-90 0 486.611)" fill="white" fill-opacity="0.02"/>
+</g>
+<defs>
+<clipPath id="bgblur_0_198_1017_clip_path" transform="translate(215 215)"><rect y="486.611" width="486.611" height="567" transform="rotate(-90 0 486.611)"/>
+</clipPath></defs>
+</svg>
