@@ -125,3 +125,4 @@ Configured in `.env` (scripts also read `.env.local`). `.env` is **gitignored** 
 - **[docs/PunchRaksha-Architecture-Documentation.md](docs/PunchRaksha-Architecture-Documentation.md)** — client-facing architecture overview.
 - **[docs/PunchRaksha-Database-Migration-Report.md](docs/PunchRaksha-Database-Migration-Report.md)** — MongoDB → PostgreSQL migration report.
 - **`CLAUDE.md`** — contributor guide. *(Note: its claim that MSG91 is the active auth path is contradicted by the code — Firebase OTP is what the UI uses.)*
+# punchrakshaa
