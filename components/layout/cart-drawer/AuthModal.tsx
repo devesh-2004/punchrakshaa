@@ -32,18 +32,37 @@ export function AuthModal({ isOpen, onClose, onSuccess, isCheckout }: AuthModalP
   const [otpMessage, setOtpMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
 
   useEffect(() => {
-    // Cleanup recaptcha and reset state when modal closes
     if (!isOpen) {
+      // Reset all state and destroy the verifier when modal closes
       setStep("phone");
       setPhone("");
       setOtp("");
       setConfirmationResult(null);
       setOtpMessage(null);
       if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
+        try { window.recaptchaVerifier.clear(); } catch {}
         window.recaptchaVerifier = null;
       }
+      return;
     }
+
+    // Pre-render invisible reCAPTCHA as soon as the modal opens.
+    // setTimeout(0) ensures the portal has committed <div id="recaptcha-container"> to the DOM.
+    const timer = setTimeout(() => {
+      if (window.recaptchaVerifier) return;
+      try {
+        window.recaptchaVerifier = new RecaptchaVerifier(
+          firebaseAuth,
+          "recaptcha-container",
+          { size: "invisible" }
+        );
+        window.recaptchaVerifier.render();
+      } catch (err) {
+        console.error("[reCAPTCHA] Pre-render failed:", err);
+      }
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -55,32 +74,52 @@ export function AuthModal({ isOpen, onClose, onSuccess, isCheckout }: AuthModalP
     }
     setLoading(true);
     try {
+      // Fallback: create + render verifier if the useEffect pre-render hasn't fired yet
       if (!window.recaptchaVerifier) {
-        window.recaptchaVerifier = new RecaptchaVerifier(firebaseAuth, "recaptcha-container", {
-          size: "invisible",
-        });
+        window.recaptchaVerifier = new RecaptchaVerifier(
+          firebaseAuth,
+          "recaptcha-container",
+          { size: "invisible" }
+        );
+        await window.recaptchaVerifier.render();
       }
       const mobile = `+91${phone}`;
       const confirm = await signInWithPhoneNumber(firebaseAuth, mobile, window.recaptchaVerifier);
       setConfirmationResult(confirm);
       setStep("otp");
-      
+
       const successText = isResend ? "OTP resent successfully" : "OTP sent successfully";
       setOtpMessage({ type: "success", text: successText });
       setTimeout(() => {
         setOtpMessage((prev) => (prev?.type === "success" && prev?.text === successText ? null : prev));
       }, 4000);
-      
+
       return true;
     } catch (e) {
-      console.error(e);
-      // Reset recaptcha if failed
-      if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.render().then((widgetId: any) => {
-          window.grecaptcha.reset(widgetId);
-        });
+      const err = e as any;
+      // Log full error details so the real Firebase error code is visible in the console
+      console.error("[Firebase Phone Auth] sendOtp failed:", {
+        code: err?.code,
+        message: err?.message,
+        error: e,
+      });
+
+      // A reused/stale verifier is a primary cause of auth/too-many-requests.
+      // Always destroy completely and recreate so the next attempt gets a fresh token.
+      try { window.recaptchaVerifier?.clear(); } catch {}
+      window.recaptchaVerifier = null;
+      try {
+        window.recaptchaVerifier = new RecaptchaVerifier(
+          firebaseAuth,
+          "recaptcha-container",
+          { size: "invisible" }
+        );
+        await window.recaptchaVerifier.render();
+      } catch (reinitErr) {
+        console.error("[reCAPTCHA] Reinit after failure failed:", reinitErr);
       }
-      const rawMsg = (e instanceof Error ? e.message : "Failed to send OTP");
+
+      const rawMsg = e instanceof Error ? e.message : "Failed to send OTP";
       const cleanMsg = rawMsg.replace(/Firebase:?\s*/i, "").replace(/\s*\(auth\/.*?\)/i, "").trim();
       toast.error(cleanMsg || "Failed to send OTP");
       return false;

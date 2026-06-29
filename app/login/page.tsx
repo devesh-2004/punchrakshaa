@@ -35,9 +35,27 @@ export default function LoginPage() {
   }, [cooldown]);
 
   useEffect(() => {
+    // Pre-render invisible reCAPTCHA on mount.
+    // setTimeout(0) ensures <div id="recaptcha-container-login"> is in the DOM first.
+    const timer = setTimeout(() => {
+      if (!window.recaptchaVerifierLogin) {
+        try {
+          window.recaptchaVerifierLogin = new RecaptchaVerifier(
+            firebaseAuth,
+            "recaptcha-container-login",
+            { size: "invisible" }
+          );
+          window.recaptchaVerifierLogin.render();
+        } catch (err) {
+          console.error("[reCAPTCHA Login] Pre-render failed:", err);
+        }
+      }
+    }, 0);
+
     return () => {
+      clearTimeout(timer);
       if (window.recaptchaVerifierLogin) {
-        window.recaptchaVerifierLogin.clear();
+        try { window.recaptchaVerifierLogin.clear(); } catch {}
         window.recaptchaVerifierLogin = null;
       }
     };
@@ -50,10 +68,14 @@ export default function LoginPage() {
     setLoading(true);
     setOtpMessage(null);
     try {
+      // Fallback: create + render verifier if the useEffect pre-render hasn't fired yet
       if (!window.recaptchaVerifierLogin) {
-        window.recaptchaVerifierLogin = new RecaptchaVerifier(firebaseAuth, "recaptcha-container-login", {
-          size: "invisible",
-        });
+        window.recaptchaVerifierLogin = new RecaptchaVerifier(
+          firebaseAuth,
+          "recaptcha-container-login",
+          { size: "invisible" }
+        );
+        await window.recaptchaVerifierLogin.render();
       }
       const mobile = `+91${phone}`;
       const confirm = await signInWithPhoneNumber(firebaseAuth, mobile, window.recaptchaVerifierLogin);
@@ -68,12 +90,29 @@ export default function LoginPage() {
       setCooldown(30);
       toast.success("OTP sent to your mobile number");
     } catch (e) {
-      console.error(e);
-      if (window.recaptchaVerifierLogin) {
-        window.recaptchaVerifierLogin.render().then((widgetId: any) => {
-          window.grecaptcha.reset(widgetId);
-        });
+      const err = e as any;
+      // Log full error details so the real Firebase error code is visible in the console
+      console.error("[Firebase Phone Auth - Login] sendOtp failed:", {
+        code: err?.code,
+        message: err?.message,
+        error: e,
+      });
+
+      // A reused/stale verifier is a primary cause of auth/too-many-requests.
+      // Always destroy completely and recreate so the next attempt gets a fresh token.
+      try { window.recaptchaVerifierLogin?.clear(); } catch {}
+      window.recaptchaVerifierLogin = null;
+      try {
+        window.recaptchaVerifierLogin = new RecaptchaVerifier(
+          firebaseAuth,
+          "recaptcha-container-login",
+          { size: "invisible" }
+        );
+        await window.recaptchaVerifierLogin.render();
+      } catch (reinitErr) {
+        console.error("[reCAPTCHA Login] Reinit after failure failed:", reinitErr);
       }
+
       const rawMsg = e instanceof Error ? e.message : "Failed to send OTP";
       const cleanMsg = rawMsg.replace(/Firebase:?\s*/i, "").replace(/\s*\(auth\/.*?\)/i, "").trim();
       toast.error(cleanMsg || "Failed to send OTP");
