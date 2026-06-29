@@ -18,6 +18,7 @@ export type SiteSettingsDoc = {
   key: string;
   consultation: Record<string, any>;
   badges: Record<string, any>;
+  supportWhatsapp?: string;
   createdAt?: Date;
   updatedAt?: Date;
 };
@@ -27,6 +28,7 @@ function rowToSettings(row: Record<string, any>): SiteSettingsDoc {
     key: row.key,
     consultation: { ...DEFAULT_CONSULTATION, ...(row.consultation ?? {}) },
     badges: { ...DEFAULT_BADGES, ...(row.badges ?? {}) },
+    supportWhatsapp: row.support_whatsapp ?? "",
     createdAt: date(row.created_at),
     updatedAt: date(row.updated_at),
   };
@@ -44,17 +46,39 @@ export async function getGlobal(): Promise<SiteSettingsDoc> {
   return rowToSettings(row!);
 }
 
-/** Merge-update consultation / badges (mirrors findOneAndUpdate with $set + upsert). */
-export async function upsertGlobal(patch: { consultation?: Record<string, any>; badges?: Record<string, any> }): Promise<SiteSettingsDoc> {
+/** Merge-update consultation / badges / support_whatsapp (mirrors findOneAndUpdate with $set + upsert). */
+export async function upsertGlobal(patch: {
+  consultation?: Record<string, any>;
+  badges?: Record<string, any>;
+  supportWhatsapp?: string;
+}): Promise<SiteSettingsDoc> {
   await getGlobal(); // ensure row exists
+  
+  const sets: string[] = [];
+  const params: unknown[] = [];
+
+  if (patch.consultation) {
+    params.push(JSON.stringify(patch.consultation));
+    sets.push(`consultation = consultation || $${params.length}::jsonb`);
+  }
+  if (patch.badges) {
+    params.push(JSON.stringify(patch.badges));
+    sets.push(`badges = badges || $${params.length}::jsonb`);
+  }
+  if (patch.supportWhatsapp !== undefined) {
+    params.push(patch.supportWhatsapp);
+    sets.push(`support_whatsapp = $${params.length}`);
+  }
+
+  if (sets.length === 0) {
+    return getGlobal();
+  }
+
+  sets.push("updated_at = now()");
+
   const row = await one(
-    `UPDATE site_settings SET
-       consultation = consultation || $1::jsonb,
-       badges = badges || $2::jsonb,
-       updated_at = now()
-     WHERE key = 'global'
-     RETURNING *`,
-    [JSON.stringify(patch.consultation ?? {}), JSON.stringify(patch.badges ?? {})],
+    `UPDATE site_settings SET ${sets.join(", ")} WHERE key = 'global' RETURNING *`,
+    params,
   );
   return rowToSettings(row!);
 }

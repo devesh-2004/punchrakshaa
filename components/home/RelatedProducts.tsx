@@ -20,6 +20,8 @@ export async function RelatedProducts({ productIds }: { productIds: string[] }) 
       _id: p._id.toString(),
       name: p.name,
       secondaryName: p.secondaryName,
+      label: p.label,
+      subLabel: p.subLabel,
       slug: p.slug,
       category: p.category || "",
       image: p.featuredImage || p.images?.[0]?.url || "/placeholder/product-400.svg",

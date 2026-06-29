@@ -23,6 +23,8 @@ export async function AllProductsGrid() {
       _id: p._id.toString(),
       name: p.name,
       secondaryName: p.secondaryName,
+      label: p.label,
+      subLabel: p.subLabel,
       slug: p.slug,
       category: p.category || "Piles Medicine",
       image: validImageUrl(p.featuredImage) !== PLACEHOLDER

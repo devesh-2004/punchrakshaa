@@ -731,14 +731,29 @@ export function CartDrawer() {
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="font-outfit txt-p-lg font-semibold text-[#121212] md:mb-[2px]">
-                          {it.name}
-                          {/* {it.secondaryName && (
-                            <span className="font-normal ml-1">
-                              {it.secondaryName}
-                            </span>
-                          )} */}
-                        </div>
+                        {(it.label || it.subLabel) ? (
+                          <>
+                            <div className="font-outfit txt-p-lg font-semibold text-[#045830] md:mb-[2px]">
+                              {it.label}
+                            </div>
+                            {it.subLabel && (
+                              <div className="font-outfit text-xs text-[#767676] md:mb-[2px]">
+                                {it.subLabel}
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <div className="font-outfit txt-p-lg font-semibold text-[#121212] md:mb-[2px]">
+                              {it.name}
+                            </div>
+                            {it.secondaryName && (
+                              <div className="font-outfit text-xs text-[#767676] md:mb-[2px]">
+                                {it.secondaryName}
+                              </div>
+                            )}
+                          </>
+                        )}
                         <div className="font-outfit txt-p text-[#121212] font-medium tracking-wide md:mb-[2px]">
                           Size: {it.packLabel}
                         </div>
@@ -878,9 +893,29 @@ export function CartDrawer() {
                       </div>
                       <div className="flex-1 flex flex-col justify-between py-1 min-w-0">
                         <div>
-                          <div className="font-outfit txt-p-lg font-medium text-[#121212] line-clamp-1">
-                            {p.name}
-                          </div>
+                          {(p.label || p.subLabel) ? (
+                            <>
+                              <div className="font-outfit txt-p-lg font-medium text-[#045830] line-clamp-1">
+                                {p.label}
+                              </div>
+                              {p.subLabel && (
+                                <div className="font-outfit text-xs text-[#767676] line-clamp-1">
+                                  {p.subLabel}
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <div className="font-outfit txt-p-lg font-medium text-[#121212] line-clamp-1">
+                                {p.name}
+                              </div>
+                              {p.secondaryName && (
+                                <div className="font-outfit text-xs text-[#767676] line-clamp-1">
+                                  {p.secondaryName}
+                                </div>
+                              )}
+                            </>
+                          )}
                           <div className="flex items-center gap-[5px] mb-[3px] md:mt-[5px] md:mb-[10px]">
                             <span className="font-outfit txt-p-lg font-bold text-[#121212]">
                               {formatPrice(firstPack?.price)}
@@ -896,6 +931,8 @@ export function CartDrawer() {
                               productId: p._id,
                               name: p.name,
                               secondaryName: p.secondaryName,
+                              label: p.label,
+                              subLabel: p.subLabel,
                               packLabel: firstPack?.label || "PACK of 1",
                               price: firstPack?.price,
                               mrp: firstPack?.mrp,
@@ -1021,14 +1058,32 @@ export function CartDrawer() {
                       </div>
                       <div className="flex-1 flex flex-col justify-between py-1 min-w-0">
                         <div>
-                          <div className="font-outfit txt-p-lg font-medium text-[#121212] line-clamp-1">{p.name}</div>
+                          {(p.label || p.subLabel) ? (
+                            <>
+                              <div className="font-outfit txt-p-lg font-medium text-[#045830] line-clamp-1">
+                                {p.label}
+                              </div>
+                              {p.subLabel && (
+                                <div className="font-outfit text-xs text-[#767676] line-clamp-1">
+                                  {p.subLabel}
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <div className="font-outfit txt-p-lg font-medium text-[#121212] line-clamp-1">{p.name}</div>
+                              {p.secondaryName && (
+                                <div className="font-outfit text-xs text-[#767676] line-clamp-1">{p.secondaryName}</div>
+                              )}
+                            </>
+                          )}
                           <div className="flex items-center gap-[5px] mb-[3px] md:mt-[5px] md:mb-[10px]">
                             <span className="font-outfit txt-p-lg font-bold text-[#121212]">{formatPrice(firstPack?.price)}</span>
                             <span className="font-outfit txt-p text-[#767676] line-through font-semibold">{formatPrice(firstPack?.mrp)}</span>
                           </div>
                         </div>
                         <ButtonBase
-                          onClick={() => addItem({ productId: p._id, name: p.name, secondaryName: p.secondaryName, packLabel: firstPack?.label || "PACK of 1", price: firstPack?.price, mrp: firstPack?.mrp, upiDiscountPercent: p.upiDiscountPercent || 10, upiMaxDiscount: p.upiMaxDiscount || 60, cardDiscountPercent: p.cardDiscountPercent || 5, cardMaxDiscount: p.cardMaxDiscount || 25, image: p.images?.[0]?.url })}
+                          onClick={() => addItem({ productId: p._id, name: p.name, secondaryName: p.secondaryName, label: p.label, subLabel: p.subLabel, packLabel: firstPack?.label || "PACK of 1", price: firstPack?.price, mrp: firstPack?.mrp, upiDiscountPercent: p.upiDiscountPercent || 10, upiMaxDiscount: p.upiMaxDiscount || 60, cardDiscountPercent: p.cardDiscountPercent || 5, cardMaxDiscount: p.cardMaxDiscount || 25, image: p.images?.[0]?.url })}
                           className="!flex-0 py-[8px] md:!py-[10px] md:flex-1 w-[148px] md:w-full h-[31px] md:h-[48px] bg-black text-white txt-p-lg font-bold !btn-radius-5"
                         >
                           ADD TO CART

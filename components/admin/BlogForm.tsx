@@ -35,6 +35,19 @@ export function BlogForm({ existingBlog, duplicateSlug }: { existingBlog?: any; 
   const [author, setAuthor] = useState("");
   const [publishedAt, setPublishedAt] = useState(new Date().toISOString().split("T")[0]);
 
+  const [products, setProducts] = useState<{ _id: string; name: string }[]>([]);
+  const [suggestedProductIds, setSuggestedProductIds] = useState<string[]>([]);
+  const [productPickerValue, setProductPickerValue] = useState("");
+
+  useEffect(() => {
+    fetch("/api/admin/products")
+      .then(r => r.json())
+      .then(data => {
+        if (data.products) setProducts(data.products);
+      })
+      .catch(console.error);
+  }, []);
+
   useEffect(() => {
     if (existingBlog) {
       setTitle(existingBlog.title || "");
@@ -45,6 +58,7 @@ export function BlogForm({ existingBlog, duplicateSlug }: { existingBlog?: any; 
       setCoverImageAlt(existingBlog.coverImageAlt || "");
       setAuthor(existingBlog.author || "");
       setPublishedAt(existingBlog.publishedAt ? new Date(existingBlog.publishedAt).toISOString().split("T")[0] : new Date().toISOString().split("T")[0]);
+      setSuggestedProductIds(existingBlog.suggestedProductIds || []);
     } else if (duplicateSlug) {
       // Fetch duplicate data
       fetch(`/api/admin/blogs/${duplicateSlug}`)
@@ -60,6 +74,7 @@ export function BlogForm({ existingBlog, duplicateSlug }: { existingBlog?: any; 
              setCoverImageAlt(b.coverImageAlt || "");
              setAuthor(b.author || "");
              setPublishedAt(new Date().toISOString().split("T")[0]);
+             setSuggestedProductIds(b.suggestedProductIds || []);
           }
         })
         .catch(console.error);
@@ -90,7 +105,7 @@ export function BlogForm({ existingBlog, duplicateSlug }: { existingBlog?: any; 
     setLoading(true);
     
     // Convert current fields
-    const body = { title, slug, excerpt, content, coverImage, coverImageAlt, author, publishedAt };
+    const body = { title, slug, excerpt, content, coverImage, coverImageAlt, author, publishedAt, suggestedProductIds };
     
     try {
       const url = existingBlog 
@@ -172,6 +187,62 @@ export function BlogForm({ existingBlog, duplicateSlug }: { existingBlog?: any; 
         </div>
         <input value={coverImage} onChange={(e) => setCoverImage(e.target.value)} className="w-full border rounded-lg px-4 py-2 mt-2 bg-gray-50 text-sm" placeholder="https://... (or upload file)" />
         <input value={coverImageAlt} onChange={(e) => setCoverImageAlt(e.target.value)} className="w-full border rounded-lg px-4 py-2 mt-2 text-sm" placeholder="Cover image alt text (for SEO)" />
+      </div>
+
+      <div className="space-y-2 border-t pt-6">
+        <label className="block text-sm font-medium text-gray-700">Suggested Products</label>
+        <p className="text-xs text-gray-500 mb-2">Select products to show as recommendations in the sidebar of this blog</p>
+        <div className="flex gap-2">
+          <select
+            value={productPickerValue}
+            onChange={(e) => setProductPickerValue(e.target.value)}
+            className="flex-grow border rounded-lg px-3 py-2 text-sm bg-white"
+          >
+            <option value="">Select a product...</option>
+            {products
+              .filter((p) => !suggestedProductIds.includes(p._id))
+              .map((p) => (
+                <option key={p._id} value={p._id}>
+                  {p.name}
+                </option>
+              ))}
+          </select>
+          <button
+            type="button"
+            onClick={() => {
+              if (productPickerValue) {
+                setSuggestedProductIds((p) => [...p, productPickerValue]);
+                setProductPickerValue("");
+              }
+            }}
+            disabled={!productPickerValue}
+            className="px-4 py-2 bg-[#045830] text-white rounded-lg text-sm font-semibold hover:bg-[#034620] disabled:opacity-40"
+          >
+            + Add Product
+          </button>
+        </div>
+
+        {suggestedProductIds.length > 0 && (
+          <ul className="mt-3 space-y-2 max-w-md">
+            {suggestedProductIds.map((id) => (
+              <li key={id} className="flex items-center justify-between gap-2 px-3 py-2 bg-gray-50 border rounded-lg text-sm">
+                <span className="truncate">
+                  {products.find((p) => p._id === id)?.name || id}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSuggestedProductIds((p) => p.filter((x) => x !== id))}
+                  className="shrink-0 text-gray-300 hover:text-red-500"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <div className="space-y-2">

@@ -15,6 +15,10 @@ export async function PUT(req: Request) {
   const auth = await requireAdmin();
   if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await req.json();
-  const settings = await upsertGlobal({ consultation: body.consultation, badges: body.badges });
+  const settings = await upsertGlobal({
+    consultation: body.consultation,
+    badges: body.badges,
+    supportWhatsapp: body.supportWhatsapp,
+  });
   return NextResponse.json({ settings });
 }

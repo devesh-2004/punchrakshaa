@@ -19,11 +19,24 @@ export function OrderSummary() {
             </div>
             <div className="flex-1">
               <p className="font-outfit text-[18px] text-text-main">
-                <span className="font-semibold">{it.name}</span>
-                {it.secondaryName && (
-                  <span className="font-normal ml-1">
-                    {it.secondaryName}
-                  </span>
+                {(it.label || it.subLabel) ? (
+                  <>
+                    <span className="font-semibold text-[#045830]">{it.label}</span>
+                    {it.subLabel && (
+                      <span className="font-normal ml-1 text-text-muted">
+                        ({it.subLabel})
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <span className="font-semibold">{it.name}</span>
+                    {it.secondaryName && (
+                      <span className="font-normal ml-1">
+                        {it.secondaryName}
+                      </span>
+                    )}
+                  </>
                 )}
               </p>
               <p className="mt-1 text-[14px] text-text-muted">

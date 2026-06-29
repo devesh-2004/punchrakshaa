@@ -31,17 +31,30 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     if (!admin) return jsonBad("Unauthorized", 401);
 
     const body = await req.json();
+    const patch: Record<string, any> = {};
+    if (body.status !== undefined) patch.status = body.status;
+    if (body.trackingUrl !== undefined) {
+      const trimmed = body.trackingUrl.trim();
+      if (trimmed !== "") {
+        try {
+          new URL(trimmed);
+        } catch (_) {
+          return jsonBad("Invalid Tracking URL format", 400);
+        }
+      }
+      patch.trackingUrl = trimmed;
+    }
 
     // Admin can update status and tracking details
-    const order = await ordersRepo.updateById(params.id, { status: body.status });
+    const order = await ordersRepo.updateById(params.id, patch);
 
     if (!order) return jsonBad("Not Found", 404);
 
     await recordAdminAudit(req, admin, {
-      action: "order.status_change",
+      action: "order.update",
       entityType: "order",
       entityId: params.id,
-      newValues: { status: body.status },
+      newValues: patch,
     });
 
     return jsonOk({ order });

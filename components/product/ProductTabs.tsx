@@ -389,7 +389,7 @@ export function ProductTabs({ product, className = "" }: { product?: any, classN
           <UnifiedTabContent
             tabData={tabData}
             productName={product?.name || "PunchRaksha"}
-            importantNotes={product?.importantNotes}
+            importantNotes={activeTab === "Guidelines" ? product?.importantNotes : undefined}
           />
         );
       }

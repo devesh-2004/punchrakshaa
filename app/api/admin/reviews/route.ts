@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     if (!admin) return jsonBad("Unauthorized", 401);
 
     const body = await req.json();
-    const { productId, guestName, guestPhone, rating, title, reviewBody, isVerified } = body;
+    const { productId, guestName, guestPhone, rating, title, reviewBody, isVerified, createdAt } = body;
 
     if (!productId || !rating || !reviewBody || !guestName) {
       return jsonBad("Missing required fields", 400);
@@ -52,6 +52,7 @@ export async function POST(req: Request) {
       status: "approved",
       addedByAdmin: true,
       isVerified: isVerified !== false,
+      createdAt: createdAt ? new Date(createdAt) : undefined,
     });
 
     await recordAdminAudit(req, admin, {

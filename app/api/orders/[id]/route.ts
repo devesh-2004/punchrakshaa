@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { requireAuth } from "@/lib/utils/customerAuth";
 import * as ordersRepo from "@/lib/repositories/order.repository";
+import { getGlobal } from "@/lib/repositories/siteSettings.repository";
 import { jsonBad, jsonOk, jsonZodError } from "@/lib/utils/api";
 import { rateLimit } from "@/lib/rate-limit";
 
@@ -16,9 +17,12 @@ export async function GET(req: Request, ctx: { params: { id: string } }) {
     const ownerFilter = auth.phone
       ? { $or: [{ userId: auth.userId }, { guestPhone: auth.phone }] }
       : { userId: auth.userId };
-    const doc = await ordersRepo.findOne({ _id: id, ...ownerFilter });
+    const [doc, settings] = await Promise.all([
+      ordersRepo.findOne({ _id: id, ...ownerFilter }),
+      getGlobal(),
+    ]);
     if (!doc) return jsonBad("Order not found", 404);
-    return jsonOk({ order: doc });
+    return jsonOk({ order: doc, supportWhatsapp: settings.supportWhatsapp });
   } catch (err) {
     const zod = jsonZodError(err);
     if (zod) return zod;

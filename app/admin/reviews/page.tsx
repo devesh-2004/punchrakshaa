@@ -61,6 +61,7 @@ export default function AdminReviewsPage() {
     title: "",
     reviewBody: "",
     isVerified: true,
+    createdAt: "",
   });
   const [addLoading, setAddLoading] = useState(false);
 
@@ -91,7 +92,16 @@ export default function AdminReviewsPage() {
   };
 
   const openAddModal = () => {
-    setAddForm({ productId: "", guestName: "", guestPhone: "", rating: 5, title: "", reviewBody: "", isVerified: true });
+    setAddForm({
+      productId: "",
+      guestName: "",
+      guestPhone: "",
+      rating: 5,
+      title: "",
+      reviewBody: "",
+      isVerified: true,
+      createdAt: new Date().toLocaleDateString('en-CA'),
+    });
     setShowAddModal(true);
   };
 
@@ -376,6 +386,17 @@ export default function AdminReviewsPage() {
                     className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#045830] transition"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Review Date *</label>
+                <input
+                  type="date"
+                  value={addForm.createdAt}
+                  onChange={(e) => setAddForm((f) => ({ ...f, createdAt: e.target.value }))}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#045830] transition"
+                  required
+                />
               </div>
 
               <div>

@@ -122,6 +122,8 @@ export function ProductForm({ initialData = {}, isEdit = false }: Props) {
   // Basic
   const [name, setName] = useState(initialData.name || "");
   const [secondaryName, setSecondaryName] = useState(initialData.secondaryName || "");
+  const [label, setLabel] = useState(initialData.label || "");
+  const [subLabel, setSubLabel] = useState(initialData.subLabel || "");
   const [slug, setSlug] = useState(initialData.slug || "");
   const [slugEdited, setSlugEdited] = useState(false);
   const [shortDesc, setShortDesc] = useState(initialData.shortDescription || "");
@@ -373,8 +375,22 @@ export function ProductForm({ initialData = {}, isEdit = false }: Props) {
     e.preventDefault();
     setLoading(true);
 
+    if (label.trim().length > 100) {
+      toast.error("Product Label cannot exceed 100 characters");
+      setLoading(false);
+      return;
+    }
+    if (subLabel.trim().length > 150) {
+      toast.error("Product Sub Label cannot exceed 150 characters");
+      setLoading(false);
+      return;
+    }
+
     const payload = {
-      name, secondaryName, slug, category,
+      name, secondaryName,
+      label: label.trim() || null,
+      subLabel: subLabel.trim() || null,
+      slug, category,
       shortDescription: shortDesc, description: shortDesc,
       price: Number(price), discountedPrice: Number(discPrice), discountPercent: Number(discPercent),
       upiDiscountPercent: Number(upiDiscPct), upiMaxDiscount: Number(upiMaxDisc),
@@ -426,6 +442,16 @@ export function ProductForm({ initialData = {}, isEdit = false }: Props) {
               <div>
                 <label className="field-label">Secondary Name <span className="text-gray-400 font-normal text-xs normal-case">(e.g. Herbal Piles Tablet)</span></label>
                 <input value={secondaryName} onChange={e => setSecondaryName(e.target.value)} className="field-input" />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="field-label">Product Label <span className="text-gray-400 font-normal text-xs normal-case">(max 100 chars, e.g. Supports Liver Health)</span></label>
+                <input maxLength={100} value={label} onChange={e => setLabel(e.target.value)} className="field-input" />
+              </div>
+              <div>
+                <label className="field-label">Product Sub Label <span className="text-gray-400 font-normal text-xs normal-case">(max 150 chars, e.g. 100% Ayurvedic Formula)</span></label>
+                <input maxLength={150} value={subLabel} onChange={e => setSubLabel(e.target.value)} className="field-input" />
               </div>
             </div>
             <div>
@@ -1071,8 +1097,6 @@ export function ProductForm({ initialData = {}, isEdit = false }: Props) {
                   </div>
                 )}
               </div>
-              <div><label className="field-label">Label</label><input value={featuredLabel} onChange={e => setFeaturedLabel(e.target.value)} placeholder="e.g. Piles Relief Kit" className="field-input text-xs" /></div>
-              <div><label className="field-label">Sub-Label</label><input value={featuredSubLabel} onChange={e => setFeaturedSubLabel(e.target.value)} placeholder="e.g. 100% Ayurvedic" className="field-input text-xs" /></div>
             </div>
           )}
           <label className="flex items-center justify-between gap-2 cursor-pointer p-3 rounded-xl border bg-gray-50/50 hover:bg-gray-100/50 transition">

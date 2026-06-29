@@ -15,6 +15,8 @@ export async function BestSellingProducts() {
       _id: p._id.toString(),
       name: p.name,
       secondaryName: p.secondaryName,
+      label: p.label,
+      subLabel: p.subLabel,
       slug: p.slug,
       category: p.category || "Piles Medicine", // Placeholder or from schema if added later
       image: p.featuredImage || p.images?.[0]?.url || "/placeholder/product-400.svg",

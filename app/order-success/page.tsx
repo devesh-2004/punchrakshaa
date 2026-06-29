@@ -146,11 +146,24 @@ export default function OrderSuccessPage() {
                 <div className="flex-1 min-w-0 flex flex-col md:flex-row md:justify-between md:items-start gap-[10px] md:gap-4">
                   <div className="flex flex-col">
                     <div className="txt-p-lg text-[#121212]">
-                      <span className="font-semibold">{item.name}</span>
-                      {item.secondaryName && (
-                        <span className="font-normal ml-1">
-                          {item.secondaryName}
-                        </span>
+                      {(item.label || item.subLabel) ? (
+                        <>
+                          <span className="font-semibold text-[#045830]">{item.label}</span>
+                          {item.subLabel && (
+                            <span className="font-normal ml-1 text-text-muted">
+                              ({item.subLabel})
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <span className="font-semibold">{item.name}</span>
+                          {item.secondaryName && (
+                            <span className="font-normal ml-1">
+                              {item.secondaryName}
+                            </span>
+                          )}
+                        </>
                       )}
                     </div>
                     <div className="flex items-center gap-2 text-[#121212] txt-p-lg font-light mt-[10px] md:mt-[15px]">

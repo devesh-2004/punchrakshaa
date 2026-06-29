@@ -18,6 +18,7 @@ const defaultConsultation = {
 export default function SiteSettingsPage() {
   const [badges, setBadges] = useState(defaultBadges);
   const [consultation, setConsultation] = useState(defaultConsultation);
+  const [supportWhatsapp, setSupportWhatsapp] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -30,6 +31,9 @@ export default function SiteSettingsPage() {
         if (d.settings?.consultation) {
           setConsultation({ ...defaultConsultation, ...d.settings.consultation });
         }
+        if (d.settings?.supportWhatsapp) {
+          setSupportWhatsapp(d.settings.supportWhatsapp);
+        }
       })
       .finally(() => setLoading(false));
   }, []);
@@ -40,7 +44,7 @@ export default function SiteSettingsPage() {
     await fetch("/api/admin/settings", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ badges, consultation }),
+      body: JSON.stringify({ badges, consultation, supportWhatsapp }),
     });
     setSaving(false);
     setSaved(true);
@@ -154,6 +158,24 @@ export default function SiteSettingsPage() {
               placeholder="/contact"
             />
           </div>
+        </div>
+      </div>
+
+      {/* Customer Support Section */}
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 space-y-4">
+        <div>
+          <h2 className="text-base font-bold text-gray-900">Customer Support Settings</h2>
+          <p className="text-xs text-gray-500 mt-0.5">Used globally for customer help and order enquiries.</p>
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Customer Support WhatsApp Number</label>
+          <input
+            type="text"
+            value={supportWhatsapp}
+            onChange={(e) => setSupportWhatsapp(e.target.value)}
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#045830]/30"
+            placeholder="e.g. 917405498441 (include country code without +)"
+          />
         </div>
       </div>
     </div>

@@ -52,6 +52,9 @@ export default async function BlogDetailPage({ params }: Props) {
     exclusiveProduct = {
       _id: p._id.toString(),
       name: p.name,
+      secondaryName: p.secondaryName,
+      label: p.label,
+      subLabel: p.subLabel,
       slug: p.slug,
       category: p.category || "Piles Medicine",
       image: p.images?.[0]?.url || "/images/placeholders/product-placeholder.svg",
@@ -66,6 +69,47 @@ export default async function BlogDetailPage({ params }: Props) {
       cardDiscountPercent: p.cardDiscountPercent || 5,
       cardMaxDiscount: p.cardMaxDiscount || 25,
     };
+  }
+
+  // Fetch suggested products
+  let suggestedProducts: ProductCardData[] = [];
+  if (post.suggestedProductIds && post.suggestedProductIds.length > 0) {
+    const suggestedDocs = (await productsRepo.find({
+      _id: { $in: post.suggestedProductIds },
+      inStock: true,
+      isArchived: { $ne: true },
+    })) as any[];
+
+    // Sort to respect selected order
+    const sortedDocs = [...suggestedDocs].sort((a, b) => {
+      const idxA = post.suggestedProductIds.indexOf(a._id.toString());
+      const idxB = post.suggestedProductIds.indexOf(b._id.toString());
+      return idxA - idxB;
+    });
+
+    suggestedProducts = sortedDocs.map((p) => {
+      const firstPack = p.packOptions && p.packOptions.length > 0 ? p.packOptions[0] : null;
+      return {
+        _id: p._id.toString(),
+        name: p.name,
+        secondaryName: p.secondaryName,
+        label: p.label,
+        subLabel: p.subLabel,
+        slug: p.slug,
+        category: p.category || "Piles Medicine",
+        image: p.images?.[0]?.url || "/images/placeholders/product-placeholder.svg",
+        price: firstPack?.price || p.price,
+        mrp: firstPack?.mrp || (p.price + (p.price * p.discountPercent) / 100),
+        discountPercent: firstPack?.discountPercent || p.discountPercent,
+        rating: p.overallRating || 0,
+        reviewCount: p.totalReviews || 0,
+        packLabel: firstPack?.label || "PACK OF 1",
+        upiDiscountPercent: p.upiDiscountPercent || 10,
+        upiMaxDiscount: p.upiMaxDiscount || 60,
+        cardDiscountPercent: p.cardDiscountPercent || 5,
+        cardMaxDiscount: p.cardMaxDiscount || 25,
+      };
+    });
   }
 
   return (
@@ -99,6 +143,23 @@ export default async function BlogDetailPage({ params }: Props) {
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
 
+            {/* Author Section */}
+            {post.author && (
+              <div className="mt-12 p-6 md:p-8 bg-[#EDF9F5] border border-[#daefdc] rounded-xl flex flex-row items-center gap-5">
+                <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-[#045830] text-white flex items-center justify-center font-bold text-xl md:text-2xl shrink-0 shadow-md">
+                  {post.author.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <h4 className="font-outfit text-lg font-bold text-gray-900 leading-tight">
+                    Written by {post.author}
+                  </h4>
+                  <p className="font-outfit text-sm text-[#767676] mt-1 font-medium">
+                    Ayurvedic Expert & Medical Advisor at PunchRaksha
+                  </p>
+                </div>
+              </div>
+            )}
+
             <script
               type="application/ld+json"
               dangerouslySetInnerHTML={{
@@ -118,16 +179,26 @@ export default async function BlogDetailPage({ params }: Props) {
 
           {/* Right Sidebar (40%) */}
           <aside className="w-full lg:flex-1 shrink-0 h-fit sticky top-[120px] flex flex-col gap-6 pl-0 xl:pl-[10px]">
-            {/* Exclusive Offer Product Box matching Reference */}
-            <div className="bg-[#EBF7F2] p-6 lg:p-[35px] flex flex-col items-center w-full">
-              <h3 className="font-outfit text-[22px] md:text-[26px] font-semibold text-[#121212] mb-[2px] text-center leading-none">
-                Buy Piles Medicine
-              </h3>
-              <p className="font-outfit text-[14px] md:text-[16px] font-semibold text-[#32B440] mb-[30px] text-center">
-                Get 10% Discount <span className="font-medium text-[#50ae57]">on Prepaid Orders</span>
-              </p>
-              
-              {exclusiveProduct && (
+            {suggestedProducts.length > 0 ? (
+              <div className="flex flex-col gap-6 w-full">
+                <h3 className="font-outfit text-[22px] md:text-[26px] font-bold text-gray-950 mb-1 leading-none uppercase tracking-wider text-[#045830]">
+                  Suggested Products
+                </h3>
+                <div className="flex flex-col gap-5">
+                  {suggestedProducts.map((p) => (
+                    <ProductCard key={p._id} product={p} />
+                  ))}
+                </div>
+              </div>
+            ) : exclusiveProduct ? (
+              <div className="bg-[#EBF7F2] p-6 lg:p-[35px] flex flex-col items-center w-full">
+                <h3 className="font-outfit text-[22px] md:text-[26px] font-semibold text-[#121212] mb-[2px] text-center leading-none">
+                  Buy Piles Medicine
+                </h3>
+                <p className="font-outfit text-[14px] md:text-[16px] font-semibold text-[#32B440] mb-[30px] text-center">
+                  Get 10% Discount <span className="font-medium text-[#50ae57]">on Prepaid Orders</span>
+                </p>
+                
                 <div className="w-full max-w-[500px] mx-auto">
                   <div className="bg-white p-4 shadow-sm w-full mb-6 relative border border-gray-100 flex flex-col sm:flex-row gap-4 items-center sm:items-start">
                     {/* Product Image exactly referencing DB to prevent hardcoded custom images */}
@@ -137,12 +208,27 @@ export default async function BlogDetailPage({ params }: Props) {
                     
                     {/* Product details */}
                     <div className="flex flex-col justify-center w-full flex-1">
-                      <h4 className="font-outfit text-[18px] md:text-[20px] font-semibold text-[#121212] mb-[4px] leading-tight">
-                        {exclusiveProduct.name}
-                      </h4>
-                      <p className="font-outfit text-[13px] md:text-[14px] text-gray-700 mb-2 font-medium bg-transparent border-0 !p-0">
-                        {exclusiveProduct.category || "Constipation | Regular Bowel Movements"}
-                      </p>
+                      {(exclusiveProduct.label || exclusiveProduct.subLabel) ? (
+                        <>
+                          <h4 className="font-outfit text-[18px] md:text-[20px] font-semibold text-[#045830] mb-[4px] leading-tight">
+                            {exclusiveProduct.label}
+                          </h4>
+                          {exclusiveProduct.subLabel && (
+                            <p className="font-outfit text-[13px] md:text-[14px] text-[#767676] mb-2 font-medium bg-transparent border-0 !p-0">
+                              {exclusiveProduct.subLabel}
+                            </p>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <h4 className="font-outfit text-[18px] md:text-[20px] font-semibold text-[#121212] mb-[4px] leading-tight">
+                            {exclusiveProduct.name}
+                          </h4>
+                          <p className="font-outfit text-[13px] md:text-[14px] text-gray-700 mb-2 font-medium bg-transparent border-0 !p-0">
+                            {exclusiveProduct.secondaryName || exclusiveProduct.category || "Constipation | Regular Bowel Movements"}
+                          </p>
+                        </>
+                      )}
                       
                       <div className="flex items-center gap-2 mb-2">
                         <div className="flex text-[#F59E0B] text-[16px]">
@@ -184,8 +270,8 @@ export default async function BlogDetailPage({ params }: Props) {
                     </Link>
                   </div>
                 </div>
-              )}
-            </div>
+              </div>
+            ) : null}
             
             {/* Outline Button below Green Box */}
             <Link href="/products" className="flex w-full max-w-[500px] mx-auto items-center justify-center h-[54px] border border-[#045830] text-[#045830] bg-white font-outfit font-bold text-[16px] tracking-wide rounded-[5px] hover:bg-gray-50 transition-colors mt-2">

@@ -34,19 +34,64 @@ export default async function BlogPage({ searchParams }: { searchParams: { page?
           Welcome to our blog, your go-to resource for all things health and wellness. Whether you&apos;re looking to start a new fitness routine, follow a balanced diet, or learn more about our proven weight loss program, we have everything you need in one place.
         </p>
 
-        <div className="mt-[60px] grid grid-cols-1 gap-x-[30px] gap-y-[50px] md:grid-cols-2 xl:grid-cols-3">
-          {posts.map((p) => (
-            <Link key={p.slug} href={`/blog/${p.slug}`} className="mx-auto block w-full max-w-[590px] group">
-              <div className="shadow-none transition-shadow hover:shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
-                <div className="relative h-[310px] w-full bg-gray-100">
-                  {p.coverImage && <Image src={p.coverImage} alt={p.title} fill className="object-cover" />}
+        <div className="mt-[60px] grid grid-cols-1 gap-x-[30px] gap-y-[40px] md:grid-cols-2 xl:grid-cols-3">
+          {posts.map((p) => {
+            const formattedDate = p.publishedAt
+              ? new Date(p.publishedAt).toLocaleDateString("en-US", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })
+              : "";
+            const firstTag = p.tags && p.tags.length > 0 ? p.tags[0] : "Ayurveda";
+            return (
+              <Link key={p.slug} href={`/blog/${p.slug}`} className="mx-auto block w-full max-w-[590px] group">
+                <div className="bg-white border border-gray-150 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col h-full">
+                  <div className="relative h-[280px] w-full bg-gray-50 overflow-hidden">
+                    {p.coverImage ? (
+                      <Image
+                        src={p.coverImage}
+                        alt={p.coverImageAlt || p.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">
+                        No Image
+                      </div>
+                    )}
+                    {firstTag && (
+                      <span className="absolute top-4 left-4 bg-[#045830] text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
+                        {firstTag}
+                      </span>
+                    )}
+                  </div>
+                  <div className="p-6 flex flex-col flex-grow">
+                    {formattedDate && (
+                      <span className="text-xs font-semibold text-[#767676] mb-2 uppercase tracking-widest font-outfit">
+                        {formattedDate}
+                      </span>
+                    )}
+                    <h3 className="font-outfit text-[20px] font-bold text-gray-900 group-hover:text-[#045830] transition-colors leading-snug mb-3">
+                      {p.title}
+                    </h3>
+                    {p.excerpt && (
+                      <p className="text-sm text-gray-600 line-clamp-3 font-outfit leading-relaxed mb-4">
+                        {p.excerpt}
+                      </p>
+                    )}
+                    <div className="mt-auto pt-2 flex items-center text-sm font-bold text-[#045830] group-hover:text-[#034524] transition-colors gap-1.5 font-outfit">
+                      Read Article
+                      <span className="transform group-hover:translate-x-1 transition-transform duration-200">
+                        →
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <p className="mt-6 text-center font-outfit text-[18px] font-semibold md:text-[20px] text-text-main group-hover:text-[#045830] transition-colors lg:px-4">
-                {p.title}
-              </p>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
           {posts.length === 0 && (
              <div className="col-span-1 md:col-span-2 xl:col-span-3 text-center py-20 text-gray-500">
                 No blog posts available at the moment.
@@ -57,7 +102,7 @@ export default async function BlogPage({ searchParams }: { searchParams: { page?
         {totalPages > 1 && (
           <div className="mt-[80px] flex items-center justify-center gap-2 font-outfit">
             {page > 1 && (
-              <Link href={`/blog?page=${page - 1}`} className="flex h-10 w-10 items-center justify-center bg-[#F3FCEB] text-text-main hover:bg-[#A3D27B]">
+              <Link href={`/blog?page=${page - 1}`} className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#daefdc] text-[#045830] font-bold hover:bg-[#045830] hover:text-white transition-colors duration-200">
                 &lt;
               </Link>
             )}
@@ -69,7 +114,7 @@ export default async function BlogPage({ searchParams }: { searchParams: { page?
                 <Link
                   key={p}
                   href={`/blog?page=${p}`}
-                  className={`flex h-10 w-10 items-center justify-center font-medium transition-colors ${isActive ? "bg-[#A3D27B] text-white" : "bg-[#F3FCEB] text-text-main hover:bg-[#A3D27B] hover:text-white"}`}
+                  className={`flex h-10 w-10 items-center justify-center rounded-lg font-bold transition-colors duration-200 ${isActive ? "bg-[#045830] text-white" : "bg-[#daefdc] text-[#045830] hover:bg-[#045830] hover:text-white"}`}
                 >
                   {p}
                 </Link>
@@ -77,7 +122,7 @@ export default async function BlogPage({ searchParams }: { searchParams: { page?
             })}
 
             {page < totalPages && (
-              <Link href={`/blog?page=${page + 1}`} className="flex h-10 w-10 items-center justify-center bg-[#F3FCEB] text-text-main hover:bg-[#A3D27B]">
+              <Link href={`/blog?page=${page + 1}`} className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#daefdc] text-[#045830] font-bold hover:bg-[#045830] hover:text-white transition-colors duration-200">
                 &gt;
               </Link>
             )}

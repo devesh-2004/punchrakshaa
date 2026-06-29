@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { requireAuth } from "@/lib/utils/customerAuth";
 import * as ordersRepo from "@/lib/repositories/order.repository";
+import { getGlobal } from "@/lib/repositories/siteSettings.repository";
 import { jsonBad, jsonOk, jsonZodError } from "@/lib/utils/api";
 import { rateLimit } from "@/lib/rate-limit";
 
@@ -20,8 +21,11 @@ export async function GET(req: Request) {
     const query = auth.phone
       ? { $or: [{ userId: auth.userId }, { guestPhone: auth.phone }] }
       : { userId: auth.userId };
-    const docs = await ordersRepo.find(query, { sort: { createdAt: -1 }, limit: parsed.limit ?? 20 });
-    return jsonOk({ orders: docs });
+    const [docs, settings] = await Promise.all([
+      ordersRepo.find(query, { sort: { createdAt: -1 }, limit: parsed.limit ?? 20 }),
+      getGlobal(),
+    ]);
+    return jsonOk({ orders: docs, supportWhatsapp: settings.supportWhatsapp });
   } catch (err) {
     const zod = jsonZodError(err);
     if (zod) return zod;

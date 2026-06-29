@@ -14,6 +14,8 @@ export default function OrderDetailsPage({ params }: OrderParam) {
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
+  const [trackingUrl, setTrackingUrl] = useState("");
+  const [savingTracking, setSavingTracking] = useState(false);
 
   useEffect(() => {
     fetch(`/api/admin/orders/${params.id}`)
@@ -22,6 +24,7 @@ export default function OrderDetailsPage({ params }: OrderParam) {
         if (data.order) {
           setOrder(data.order);
           setStatus(data.order.status);
+          setTrackingUrl(data.order.trackingUrl || "");
         }
         setLoading(false);
       });
@@ -46,6 +49,37 @@ export default function OrderDetailsPage({ params }: OrderParam) {
     }
   }
 
+  async function handleTrackingUpdate(e: FormEvent) {
+    e.preventDefault();
+    if (trackingUrl.trim() !== "") {
+      try {
+        new URL(trackingUrl.trim());
+      } catch (_) {
+        toast.error("Invalid Tracking URL format. Must start with http:// or https://");
+        return;
+      }
+    }
+    setSavingTracking(true);
+    try {
+      const res = await fetch(`/api/admin/orders/${params.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ trackingUrl: trackingUrl.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      if (data.order) {
+        setOrder(data.order);
+        setTrackingUrl(data.order.trackingUrl || "");
+      }
+      toast.success("Tracking URL updated!");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setSavingTracking(false);
+    }
+  }
+
   if (loading) return <div>Loading order details...</div>;
   if (!order) return <div>Order not found.</div>;
 
@@ -60,7 +94,7 @@ export default function OrderDetailsPage({ params }: OrderParam) {
         </h1>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
           <h2 className="text-lg font-bold mb-4 border-b pb-2">Customer Details</h2>
           <div className="space-y-2 text-sm text-gray-700">
@@ -104,6 +138,42 @@ export default function OrderDetailsPage({ params }: OrderParam) {
           <div className="mt-6 pt-4 border-t text-sm text-gray-500">
             <p><strong>Razorpay ID:</strong> {order.razorpayOrderId || "N/A"}</p>
             <p><strong>Payment ID:</strong> {order.razorpayPaymentId || "N/A"}</p>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between">
+          <div>
+            <h2 className="text-lg font-bold mb-4 border-b pb-2">Shipment Tracking</h2>
+            <form onSubmit={handleTrackingUpdate} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tracking URL</label>
+                <input
+                  type="text"
+                  value={trackingUrl}
+                  onChange={(e) => setTrackingUrl(e.target.value)}
+                  placeholder="https://shiprocket.co/tracking/..."
+                  className="w-full border rounded-lg px-4 py-2 text-sm focus:ring-1 focus:ring-[#045830] focus:border-[#045830] outline-none"
+                />
+              </div>
+              <button 
+                type="submit" 
+                disabled={savingTracking}
+                className="w-full py-2 bg-[#045830] text-white rounded-lg hover:bg-[#034620] transition disabled:opacity-50 text-sm font-semibold"
+              >
+                {savingTracking ? "Saving..." : "Save Tracking URL"}
+              </button>
+            </form>
+          </div>
+          
+          <div className="mt-6 pt-4 border-t text-sm text-gray-500">
+            <strong>Tracking Link:</strong>{" "}
+            {order.trackingUrl ? (
+              <a href={order.trackingUrl} target="_blank" rel="noopener noreferrer" className="text-[#045830] hover:underline font-medium break-all block mt-1">
+                {order.trackingUrl}
+              </a>
+            ) : (
+              <span className="text-gray-400 block mt-1">No tracking link added yet.</span>
+            )}
           </div>
         </div>
       </div>

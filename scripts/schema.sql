@@ -62,6 +62,8 @@ CREATE TABLE IF NOT EXISTS products (
   slug               TEXT NOT NULL,   -- uniqueness enforced by partial index (active rows only)
   name               TEXT NOT NULL,
   secondary_name     TEXT NOT NULL DEFAULT '',
+  label              TEXT,
+  sub_label          TEXT,
   short_description  TEXT NOT NULL DEFAULT '',
   description        TEXT NOT NULL DEFAULT '',
   price              NUMERIC NOT NULL DEFAULT 0,
@@ -337,6 +339,7 @@ CREATE TABLE IF NOT EXISTS site_settings (
   key           TEXT PRIMARY KEY DEFAULT 'global',
   consultation  JSONB NOT NULL DEFAULT '{}'::jsonb,
   badges        JSONB NOT NULL DEFAULT '{}'::jsonb,
+  support_whatsapp TEXT NOT NULL DEFAULT '',
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -735,3 +738,10 @@ CREATE INDEX IF NOT EXISTS idx_order_items_product              ON order_items (
 CREATE INDEX IF NOT EXISTS idx_product_blogs_blog               ON product_blogs (blog_id);
 CREATE INDEX IF NOT EXISTS idx_product_testimonials_testimonial ON product_testimonials (testimonial_id);
 CREATE INDEX IF NOT EXISTS idx_reviews_user                     ON reviews (user_id);
+
+-- Migration: Add label and sub_label to products table if they don't exist
+ALTER TABLE products ADD COLUMN IF NOT EXISTS label TEXT;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS sub_label TEXT;
+
+-- Migration: Add support_whatsapp to site_settings table if it doesn't exist
+ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS support_whatsapp TEXT NOT NULL DEFAULT '';

@@ -23,6 +23,8 @@ export interface ProductCardData {
   reviewCount: number;
   packLabel?: string; // "PACK OF 1"
   secondaryName?: string;
+  label?: string;
+  subLabel?: string;
   upiDiscountPercent: number;
   upiMaxDiscount: number;
   cardDiscountPercent: number;
@@ -45,14 +47,33 @@ export function ProductCard({ product }: { product: ProductCardData }) {
       </Link>
 
       <div className="text-center flex flex-col flex-grow">
-        <Link href={`/product/${product.slug}`}>
-          <h3 className="txt-h3-lg font-semibold md:font-semibold text-gray-900 mb-1 font-outfit pb-[5px]">
-            {product.name}
-          </h3>
-        </Link>
-        <p className="txt-p-lg md:txt-p-lg text-[#121212] md:text-[#121212] mb-4 md:mx-0 font-outfit">
-          {product.category}
-        </p>
+        {(product.label || product.subLabel) ? (
+          <>
+            <Link href={`/product/${product.slug}`}>
+              <h3 className={`txt-h3-lg font-semibold md:font-semibold text-[#045830] font-outfit pb-[5px] ${product.subLabel ? "mb-1" : "mb-4"}`}>
+                {product.label || product.subLabel}
+              </h3>
+            </Link>
+            {product.label && product.subLabel && (
+              <p className="text-xs text-[#767676] font-outfit mb-4 md:mx-0">
+                {product.subLabel}
+              </p>
+            )}
+          </>
+        ) : (
+          <>
+            <Link href={`/product/${product.slug}`}>
+              <h3 className="txt-h3-lg font-semibold md:font-semibold text-gray-900 mb-1 font-outfit pb-[5px]">
+                {product.name}
+              </h3>
+            </Link>
+            {product.secondaryName && (
+              <p className="txt-p-lg md:txt-p-lg text-[#121212] md:text-[#121212] mb-4 md:mx-0 font-outfit">
+                {product.secondaryName}
+              </p>
+            )}
+          </>
+        )}
 
         <div className="flex flex-col items-center mx-2 md:mx-0">
           <div className="flex items-center justify-center gap-2 mb-1 w-full flex-wrap">
@@ -117,6 +138,8 @@ export function ProductCard({ product }: { product: ProductCardData }) {
                   productId: product._id,
                   name: product.name,
                   secondaryName: product.secondaryName,
+                  label: product.label,
+                  subLabel: product.subLabel,
                   packLabel: packLabel.replace("OF", "of").replace("PACK", "PACK"),
                   price: product.price,
                   mrp: product.mrp,

@@ -15,6 +15,8 @@ declare global {
 
 type Step = "enter" | "confirm" | "otp";
 
+const IS_DEV = process.env.NEXT_PUBLIC_NODE_ENV === "development";
+
 export default function LoginPage() {
   const router = useRouter();
   const [step, setStep] = useState<Step>("enter");
@@ -72,7 +74,28 @@ export default function LoginPage() {
           window.grecaptcha.reset(widgetId);
         });
       }
-      toast.error((e instanceof Error ? e.message : "Failed to send OTP"));
+      const rawMsg = e instanceof Error ? e.message : "Failed to send OTP";
+      const cleanMsg = rawMsg.replace(/Firebase:?\s*/i, "").replace(/\s*\(auth\/.*?\)/i, "").trim();
+      toast.error(cleanMsg || "Failed to send OTP");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function devLogin() {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/dev-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error ?? "Dev login failed");
+      toast.success("Logged in (dev)");
+      router.push("/account");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Dev login failed");
     } finally {
       setLoading(false);
     }
@@ -150,6 +173,22 @@ export default function LoginPage() {
                   Send OTP
                 </button>
               </div>
+              {IS_DEV && (
+                <div className="mt-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="flex-1 h-px bg-black/10" />
+                    <span className="font-outfit text-[11px] font-semibold text-orange-500 bg-orange-50 border border-orange-200 rounded px-2 py-0.5 uppercase tracking-wider">Dev Only</span>
+                    <div className="flex-1 h-px bg-black/10" />
+                  </div>
+                  <button
+                    disabled={loading}
+                    onClick={devLogin}
+                    className="h-[68px] w-full rounded-[15px] border-2 border-dashed border-orange-400 bg-orange-50 font-outfit text-[18px] font-bold text-orange-600 uppercase tracking-wider disabled:opacity-50"
+                  >
+                    {loading ? "Logging in..." : "⚡ Skip OTP (Dev Login)"}
+                  </button>
+                </div>
+              )}
             </>
           ) : null}
 

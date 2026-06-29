@@ -59,6 +59,8 @@ export function ProductStickyBar({ product }: { product: any }) {
       productId: product?._id || "punchraksha-piles",
       name: product?.name || "PunchRaksha Piles Relief Tablet",
       secondaryName: product?.secondaryName,
+      label: product?.label,
+      subLabel: product?.subLabel,
       packLabel: selectedPack.label,
       price: selectedPack.price,
       mrp: selectedPack.mrp,
@@ -91,7 +93,7 @@ export function ProductStickyBar({ product }: { product: any }) {
           </div>
           <div className="flex flex-col text-left">
             <div className="font-outfit txt-h1 font-medium text-[#121212] leading-tight text-left">
-              {product?.name || "100% Ayurvedic Medicine for Piles"}
+              {(product?.label || product?.subLabel) ? product.label : (product?.name || "100% Ayurvedic Medicine for Piles")}
             </div>
           </div>
         </div>

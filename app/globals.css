@@ -267,3 +267,36 @@ body {
   }
 
 }
+
+/* Premium Prose Table Styles for Blogs */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  text-align: left;
+}
+.prose thead {
+  border-bottom: 2px solid #045830;
+}
+.prose th {
+  background-color: #EDF9F5;
+  color: #045830;
+  font-weight: 700;
+  padding: 12px 16px;
+  border: 1px solid #daefdc;
+}
+.prose td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  border-left: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+  color: #121212;
+}
+.prose tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+.prose tr:hover {
+  background-color: #f3fbf8;
+}

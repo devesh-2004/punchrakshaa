@@ -737,6 +737,8 @@ export function ProductHero({ product, promoText, overallRating, totalReviews }:
                           productId: product?._id || "punchraksha-piles",
                           name: product?.name || "PunchRaksha Piles Relief Tablet",
                           secondaryName: product?.secondaryName,
+                          label: product?.label,
+                          subLabel: product?.subLabel,
                           packLabel: selectedPack,
                           price: pack.price,
                           mrp: pack.mrp,

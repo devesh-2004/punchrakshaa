@@ -17,6 +17,7 @@ const COL: Record<string, string> = {
   isVerified: "is_verified",
   status: "status",
   addedByAdmin: "added_by_admin",
+  createdAt: "created_at",
 };
 
 /**

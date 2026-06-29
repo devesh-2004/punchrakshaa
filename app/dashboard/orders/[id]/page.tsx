@@ -67,6 +67,7 @@ export default function OrderDetailPage() {
   const firstName = (userName || "User").split(" ")[0];
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
+  const [supportWhatsapp, setSupportWhatsapp] = useState("");
 
   // Cancel modal
   const [showCancel, setShowCancel] = useState(false);
@@ -79,7 +80,10 @@ export default function OrderDetailPage() {
       try {
         const res = await fetch(`/api/orders/${id}`);
         const data = await res.json();
-        if (res.ok) setOrder(data.order);
+        if (res.ok) {
+          setOrder(data.order);
+          setSupportWhatsapp(data.supportWhatsapp || "");
+        }
         else toast.error(data?.error ?? "Order not found");
       } finally {
         setLoading(false);
@@ -175,40 +179,80 @@ export default function OrderDetailPage() {
                 </div>
 
                 {/* Action buttons — 2×2 grid on mobile, single row on desktop */}
-                <div className="grid grid-cols-2 lg:flex gap-[10px] md:gap-[20px]">
-                  <a
-                    href={order.trackingUrl || WHATSAPP}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center justify-center px-[10px] py-[8px] lg:px-[14px] lg:py-[10px] btn-radius-10 bg-[#E05C4B] text-white font-bold txt-div-22 uppercase hover:opacity-90 transition-opacity"
-                  >
-                    TRACK ORDER
-                  </a>
+                <div className="flex flex-col gap-2">
+                  <div className="grid grid-cols-2 lg:flex gap-[10px] md:gap-[20px]">
+                    {order.trackingUrl ? (
+                      <a
+                        href={order.trackingUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center justify-center px-[10px] py-[8px] lg:px-[14px] lg:py-[10px] btn-radius-10 bg-[#E05C4B] text-white font-bold txt-div-22 uppercase hover:opacity-90 transition-opacity"
+                      >
+                        TRACK ORDER
+                      </a>
+                    ) : null}
 
-                  <a
-                    href={WHATSAPP}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center justify-center px-[10px] py-[8px] lg:px-[14px] lg:py-[10px]  btn-radius-10 bg-[#E8A224] text-black font-bold txt-div-22 uppercase hover:opacity-90 transition-opacity"
-                  >
-                    CONTACT US
-                  </a>
-
-                  {canCancel(order.status) ? (
                     <button
                       onClick={() => {
-                        setShowCancel(true);
-                        setCancelReason(CANCEL_REASONS[0]);
-                        setCancelOther("");
+                        if (!supportWhatsapp) {
+                          toast.error("Customer support is currently unavailable.");
+                          return;
+                        }
+                        const orderId = shortId(order._id);
+                        const orderDate = fmtDate(order.createdAt);
+                        const productsText = order.items
+                          .map((item) => `• ${item.name} × ${item.qty}`)
+                          .join("\n");
+                        const paymentMethodText = order.paymentMethod === "COD" ? "Cash on Delivery" : "Prepaid";
+                        const message = `Hello PunchRaksha Team,
+
+I need help regarding my order.
+
+Order ID: ${orderId}
+
+Order Date: ${orderDate}
+
+Product(s):
+${productsText}
+
+Total Amount: ₹${order.total}
+
+Payment Method: ${paymentMethodText}
+
+Please assist me regarding this order.
+
+Thank you.`;
+
+                        const encodedMessage = encodeURIComponent(message);
+                        const whatsappUrl = `https://wa.me/${supportWhatsapp}?text=${encodedMessage}`;
+                        window.open(whatsappUrl, "_blank");
                       }}
-                      className="flex items-center justify-center px-[10px] py-[8px] lg:px-[14px] lg:py-[10px]  btn-radius-10 bg-black text-white font-bold txt-div-22 uppercase hover:opacity-80 transition-opacity"
+                      className="flex items-center justify-center px-[10px] py-[8px] lg:px-[14px] lg:py-[10px]  btn-radius-10 bg-[#E8A224] text-black font-bold txt-div-22 uppercase hover:opacity-90 transition-opacity"
                     >
-                      CANCEL
+                      CONTACT US
                     </button>
-                  ) : (
-                    <span className="flex items-center justify-center px-[10px] py-[8px] lg:px-[14px] lg:py-[10px] btn-radius-10 bg-black/10 text-[#767676] font-bold txt-div-22 uppercase">
-                      {order.status.toUpperCase()}
-                    </span>
+
+                    {canCancel(order.status) ? (
+                      <button
+                        onClick={() => {
+                          setShowCancel(true);
+                          setCancelReason(CANCEL_REASONS[0]);
+                          setCancelOther("");
+                        }}
+                        className="flex items-center justify-center px-[10px] py-[8px] lg:px-[14px] lg:py-[10px]  btn-radius-10 bg-black text-white font-bold txt-div-22 uppercase hover:opacity-80 transition-opacity"
+                      >
+                        CANCEL
+                      </button>
+                    ) : (
+                      <span className="flex items-center justify-center px-[10px] py-[8px] lg:px-[14px] lg:py-[10px] btn-radius-10 bg-black/10 text-[#767676] font-bold txt-div-22 uppercase">
+                        {order.status.toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                  {!order.trackingUrl && (
+                    <p className="text-xs text-[#767676] italic mt-1 font-outfit max-w-sm">
+                      Tracking details are not available yet. Your shipment is being prepared. Please check again later.
+                    </p>
                   )}
                 </div>
         </div>

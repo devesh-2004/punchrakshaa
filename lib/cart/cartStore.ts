@@ -5,6 +5,8 @@ export interface CartItem {
   productId: string;
   name: string;
   secondaryName?: string;
+  label?: string;
+  subLabel?: string;
   packLabel: string; // "PACK of 1"
   price: number;
   mrp: number;

@@ -30,6 +30,8 @@ const nextConfig = {
       // YouTube video thumbnails (testimonial videos)
       { protocol: "https", hostname: "img.youtube.com" },
       { protocol: "https", hostname: "i.ytimg.com" },
+      // Custom CDN domains
+      { protocol: "https", hostname: "cdn.punchraksha.com" },
       ...(r2Host ? [{ protocol: "https", hostname: r2Host }] : []),
     ],
   },
