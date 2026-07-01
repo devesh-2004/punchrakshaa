@@ -15,7 +15,7 @@ export default function DashboardOverview() {
   const [loading, setLoading] = useState(true);
 
   // OTP modal state
-  const [showOtpModal, setShowOtpModal] = useState(true);
+  const [showOtpModal, setShowOtpModal] = useState(false);
   const [otpArray, setOtpArray] = useState(["", "", "", "", "", ""]);
   const [pendingPhone, setPendingPhone] = useState("");
   const [resendTimer, setResendTimer] = useState(0);

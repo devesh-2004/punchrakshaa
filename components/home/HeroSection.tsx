@@ -6,22 +6,22 @@ import { useState, useEffect, useRef } from "react";
 const slides = [
   {
     desktop: "/images/homepage/Homepage-content/mega-sale-is-live.webp",
-    mobile: "/images/homepage/Homepage-content/mega-sale-is-live.webp",
+    mobile: "/images/homepage/Homepage-content/mega-sale-is-live-now.webp",
     alt: "mega sale is live",
   },
   {
     desktop: "/images/homepage/Homepage-content/natural-and-effective-solutions-for-daily-wellness.webp",
-    mobile: "/images/homepage/Homepage-content/natural-and-effective-solutions-for-daily-wellness.webp",
+    mobile: "/images/homepage/Homepage-content/natural-and-effective-solutions-for-daily-health-and-wellness.webp",
     alt: "natural and effective solutions for daily wellness",
   },
   {
     desktop: "/images/homepage/Homepage-content/traditional-approaches-to-sugar-management.webp",
-    mobile: "/images/homepage/Homepage-content/traditional-approaches-to-sugar-management.webp",
+    mobile: "/images/homepage/Homepage-content/traditional-approaches-to-sugar-control.webp",
     alt: "traditional approaches to sugar management",
   },
   {
     desktop: "/images/homepage/Homepage-content/say-goodbye-to-digestive-issues.webp",
-    mobile: "/images/homepage/Homepage-content/say-goodbye-to-digestive-issues.webp",
+    mobile: "/images/homepage/Homepage-content/say-goodbye-to-gut-issues.webp", 
     alt: "say goodbye to digestive issues",
   },
 ];

@@ -5,10 +5,12 @@ import SafeImage from "@/components/common/SafeImage";
 import { Play } from "lucide-react";
 import { TestimonialVideoModal } from "@/components/home/TestimonialVideoModal";
 import { ButtonBase } from "@/components/ui/ButtonBase";
+import { parseVideoUrl } from "@/lib/utils/videoUrl";
 
 interface VideoCard {
   id: string;
   image: string;
+  alt?: string;
   videoId: string;
   customerName?: string;
 }
@@ -22,20 +24,26 @@ export function ProductTestimonials({ linkedTestimonialIds, heading }: { linkedT
       .then((r) => r.json())
       .then((data) => {
         if (!data.testimonials?.length) return;
-        let list = data.testimonials;
+        let list: any[] = data.testimonials;
+
         if (linkedTestimonialIds?.length) {
           list = linkedTestimonialIds
             .map((id) => list.find((t: any) => String(t._id) === String(id)))
             .filter(Boolean);
         }
-        setCards(
-          list.map((t: any) => ({
+
+        const mapped: VideoCard[] = list
+          .map((t: any) => ({
             id: t._id,
-            videoId: t.videoId,
+            videoId: t.videoId ?? "",
             image: t.image || `https://img.youtube.com/vi/${t.videoId}/hqdefault.jpg`,
+            alt: t.imageAlt || t.customerName || "Customer Testimonial",
             customerName: t.customerName,
           }))
-        );
+          // Only keep cards with a parseable video URL
+          .filter((c: VideoCard) => parseVideoUrl(c.videoId) !== null);
+
+        setCards(mapped);
       })
       .catch(() => {});
   }, [linkedTestimonialIds]);
@@ -69,11 +77,12 @@ export function ProductTestimonials({ linkedTestimonialIds, heading }: { linkedT
             >
               <button
                 onClick={() => setOpenIndex(i)}
+                aria-label={`Play video: ${c.alt || c.customerName || "customer testimonial"}`}
                 className="relative h-[367px] md:h-[503px] w-full bg-gray-100 border-b-4 border-[#045830] overflow-hidden group cursor-pointer"
               >
                 <SafeImage
                   src={c.image}
-                  alt={c.customerName || "Customer testimonial"}
+                  alt={c.alt || c.customerName || "Customer Testimonial"}
                   fill
                   className="object-cover scale-[1.13] transform origin-center transition-transform duration-300 group-hover:scale-[1.18]"
                 />
@@ -97,6 +106,7 @@ export function ProductTestimonials({ linkedTestimonialIds, heading }: { linkedT
         </div>
       </div>
 
+      {/* Modal — unmounts on close, destroying the iframe/video */}
       {openIndex !== null && (
         <TestimonialVideoModal
           videos={[cards[openIndex]]}

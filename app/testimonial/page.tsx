@@ -14,7 +14,7 @@ export function generateMetadata(): Metadata {
 export default function TestimonialPage() {
   return (
     <div className="w-full bg-white">
-      <TestimonialsSection />
+      <TestimonialsSection showAll />
     </div>
   );
 }

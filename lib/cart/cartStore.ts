@@ -113,7 +113,18 @@ export const useCartStore = create<CartState>()(
       },
       setSelectedAddress: (id) => set({ selectedAddressId: id }),
     }),
-    { name: "punchraksha-cart" },
+    {
+      name: "punchraksha-cart",
+      // Only persist plain data — Zustand v5 deep-merge would overwrite
+      // function-based computed state (subtotal, total, itemCount) with
+      // undefined on rehydration if not excluded here.
+      partialize: (state) => ({
+        isOpen: state.isOpen,
+        items: state.items,
+        addresses: state.addresses,
+        selectedAddressId: state.selectedAddressId,
+      }),
+    },
   ),
 );
 

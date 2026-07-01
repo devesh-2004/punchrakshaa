@@ -16,7 +16,10 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
       return jsonBad("Invalid status", 400);
     }
 
-    const review = await reviewsRepo.updateById(params.id, { status });
+    const review = await reviewsRepo.updateById(params.id, {
+      status,
+      isVerified: status === "approved",
+    });
 
     if (!review) return jsonBad("Review not found", 404);
     // products.overall_rating / total_reviews are maintained by the DB trigger.

@@ -256,6 +256,7 @@ export function ProductForm({ initialData = {}, isEdit = false }: Props) {
   const removeFaq = (idx: number) => setFaqs(p => p.filter((_, i) => i !== idx));
 
   // Ingredients
+  const [ingredientsHeading, setIngredientsHeading] = useState((initialData as any).ingredientsHeading || "");
   const [ingredients, setIngredients] = useState<{ name: string; description: string; image: string; altText: string }[]>(
     (initialData.ingredients as any) || []
   );
@@ -400,7 +401,7 @@ export function ProductForm({ initialData = {}, isEdit = false }: Props) {
       tabs: contentTabs,
       importantNotes: importantNotes.split("\n").map((s: string) => s.trim()).filter(Boolean),
       productDetails: { brand: dBrand, shelfLife: dLife, dosageForm: dForm, netQuantity: dQty, tabTitle: dTabTitle, productLabel: dProductLabel, fullDescription: dFull, taste: dTaste, bestTimeToConsume: dBestTime, expectedReliefTime: dReliefTime, includedProducts: dIncluded },
-      faqs, ingredients, packOptions, linkedTestimonialIds, testimonialsHeading, relatedProductIds, tags,
+      faqs, ingredients, ingredientsHeading, packOptions, linkedTestimonialIds, testimonialsHeading, relatedProductIds, tags,
       metaTitle, metaDescription: metaDesc, ogTitle, ogDescription: ogDesc, ogImageUrl, ogImageAlt,
       twitterTitle, twitterDescription: twitterDesc, customScript,
       linkedBlogSlugs, heroUsps: heroUsps.filter(Boolean), promoStripEnabled, promoStripText, featuredImage, featuredImageAlt, featuredLabel, featuredSubLabel,
@@ -598,8 +599,8 @@ export function ProductForm({ initialData = {}, isEdit = false }: Props) {
               Appears in the <b>Product Info</b> tab showing brand, shelf life, dosage form, etc.
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="md:col-span-2"><label className="field-label">Tab Heading <span className="text-gray-400 font-normal text-xs normal-case">(shown as &ldquo;About …&rdquo; — leave blank to use product name)</span></label><input value={dTabTitle} onChange={e => setDTabTitle(e.target.value)} placeholder="e.g. About Ayurvedic Piles Medicine" className="field-input text-sm" /></div>
-              <div className="md:col-span-2"><label className="field-label">Product Label <span className="text-gray-400 font-normal text-xs normal-case">(shown as &ldquo;Product: …&rdquo; — leave blank to use product name)</span></label><input value={dProductLabel} onChange={e => setDProductLabel(e.target.value)} placeholder="e.g. Ayurvedic Piles Medicine" className="field-input text-sm" /></div>
+              <div className="md:col-span-2"><label className="field-label">Tab Heading <span className="text-gray-400 font-normal text-xs normal-case">(leave blank for &ldquo;Product Details&rdquo;)</span></label><input value={dTabTitle} onChange={e => setDTabTitle(e.target.value)} placeholder="e.g. About Ayurvedic Piles Medicine" className="field-input text-sm" /></div>
+              <div className="md:col-span-2"><label className="field-label">Product Label <span className="text-gray-400 font-normal text-xs normal-case">(leave blank for &ldquo;About [product name]&rdquo;)</span></label><input value={dProductLabel} onChange={e => setDProductLabel(e.target.value)} placeholder="e.g. Ayurvedic Piles Medicine" className="field-input text-sm" /></div>
               <div><label className="field-label">Brand</label><input value={dBrand} onChange={e => setDBrand(e.target.value)} className="field-input text-sm" /></div>
               <div><label className="field-label">Shelf Life</label><input value={dLife} onChange={e => setDLife(e.target.value)} className="field-input text-sm" /></div>
               <div><label className="field-label">Dosage Form</label><input value={dForm} onChange={e => setDForm(e.target.value)} className="field-input text-sm" /></div>
@@ -654,6 +655,10 @@ export function ProductForm({ initialData = {}, isEdit = false }: Props) {
           <div className="space-y-5">
             <div className="bg-[#f0faf5] border border-[#c5e8d4] rounded-lg px-4 py-3 text-sm text-[#045830]">
               Shown on the product page as the <b>Ingredients</b> section — round circle images with name and description.
+            </div>
+            <div>
+              <label className="field-label">Section Heading (H2) <span className="text-gray-400 font-normal text-xs normal-case">(leave blank for &ldquo;Ingredients&rdquo;)</span></label>
+              <input value={ingredientsHeading} onChange={e => setIngredientsHeading(e.target.value)} placeholder="e.g. Natural Ingredients" className="field-input text-sm" />
             </div>
             <div className="flex items-center justify-between">
               <label className="field-label mb-0">Ingredients</label>

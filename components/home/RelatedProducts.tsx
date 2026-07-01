@@ -25,6 +25,7 @@ export async function RelatedProducts({ productIds }: { productIds: string[] }) 
       slug: p.slug,
       category: p.category || "",
       image: p.featuredImage || p.images?.[0]?.url || "/placeholder/product-400.svg",
+      imageAlt: p.images?.[0]?.altText || p.name,
       price: firstPack?.price || p.price,
       mrp: firstPack?.mrp || p.price,
       discountPercent: firstPack?.discountPercent || p.discountPercent,

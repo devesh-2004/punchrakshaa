@@ -49,10 +49,6 @@ export function ProductStickyBar({ product }: { product: any }) {
     return selectedPack.image || selectedPack.imageUrl || product?.images?.[0]?.url;
   }, [selectedPack, product]);
 
-  useEffect(() => {
-    // Component is now visible on load
-  }, []);
-
   const handleBuyNow = () => {
     if (!selectedPack) return;
     addItem({

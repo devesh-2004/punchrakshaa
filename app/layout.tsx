@@ -59,11 +59,11 @@ export const metadata: Metadata = {
     images: ["/brand/punchraksha-logo.webp"],
   },
   robots: {
-    index: false,
-    follow: false,
+    index: true,
+    follow: true,
     googleBot: {
-      index: false,
-      follow: false,
+      index: true,
+      follow: true,
     },
   },
 };

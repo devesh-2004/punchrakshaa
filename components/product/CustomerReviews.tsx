@@ -74,10 +74,11 @@ export function CustomerReviews({
     guestPhone: "",
     title: "",
     reviewBody: "",
-    rating: 5,
+    rating: 0,
   });
+  const [hoverRating, setHoverRating] = useState(0);
 
-  const [errors, setErrors] = useState({ guestName: "", guestPhone: "", reviewBody: "" });
+  const [errors, setErrors] = useState({ guestName: "", guestPhone: "", reviewBody: "", rating: "" });
   const [touched, setTouched] = useState({ guestName: false, guestPhone: false, reviewBody: false });
 
   const validateField = (name: string, value: string) => {
@@ -125,10 +126,14 @@ export function CustomerReviews({
     const isNameValid = validateField("guestName", reviewForm.guestName);
     const isPhoneValid = validateField("guestPhone", reviewForm.guestPhone);
     const isBodyValid = validateField("reviewBody", reviewForm.reviewBody);
+    const isRatingValid = reviewForm.rating >= 1;
 
     setTouched({ guestName: true, guestPhone: true, reviewBody: true });
+    if (!isRatingValid) {
+      setErrors((prev) => ({ ...prev, rating: "Please select a rating" }));
+    }
 
-    if (!isNameValid || !isPhoneValid || !isBodyValid) {
+    if (!isNameValid || !isPhoneValid || !isBodyValid || !isRatingValid) {
       toast.error("Please fill all required fields correctly");
       return;
     }
@@ -144,10 +149,12 @@ export function CustomerReviews({
       if (data.success) {
         toast.success("Thank you! Your review has been submitted and is awaiting approval.");
         setIsModalOpen(false);
-        setReviewForm({ guestName: "", guestPhone: "", title: "", reviewBody: "", rating: 5 });
+        setReviewForm({ guestName: "", guestPhone: "", title: "", reviewBody: "", rating: 0 });
+        setHoverRating(0);
+        setErrors({ guestName: "", guestPhone: "", reviewBody: "", rating: "" });
         setTouched({ guestName: false, guestPhone: false, reviewBody: false });
       } else {
-        toast.error(data.message || "Failed to submit review.");
+        toast.error(data.error || data.message || "Failed to submit review.");
       }
     } catch (error) {
       console.error(error);
@@ -302,6 +309,70 @@ export function CustomerReviews({
                   <input name="guestPhone" type="tel" placeholder="Your Mobile Number" value={reviewForm.guestPhone} onChange={handleChange} onBlur={handleBlur} className="flex-1 px-4 py-3 outline-none font-outfit text-[#121212] placeholder-[#A3A3A3] w-full" />
                 </div>
                 {errors.guestPhone && touched.guestPhone && <span className="text-red-500 font-outfit text-sm">{errors.guestPhone}</span>}
+              </div>
+
+              {/* Star Rating Selector */}
+              <div className="flex flex-col gap-[6px]">
+                <label className="txt-p-lg font-medium">
+                  Rating <span className="text-red-500">*</span>
+                </label>
+                <div
+                  role="radiogroup"
+                  aria-label="Select a star rating"
+                  aria-required="true"
+                  className="flex items-center gap-[6px]"
+                >
+                  {[1, 2, 3, 4, 5].map((star) => {
+                    const active = star <= (hoverRating || reviewForm.rating);
+                    return (
+                      <button
+                        key={star}
+                        type="button"
+                        role="radio"
+                        aria-checked={reviewForm.rating === star}
+                        aria-label={`${star} out of 5 stars`}
+                        onClick={() => {
+                          setReviewForm((p) => ({ ...p, rating: star }));
+                          setErrors((p) => ({ ...p, rating: "" }));
+                        }}
+                        onMouseEnter={() => setHoverRating(star)}
+                        onMouseLeave={() => setHoverRating(0)}
+                        onKeyDown={(e) => {
+                          if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+                            e.preventDefault();
+                            const next = Math.min(5, reviewForm.rating + 1);
+                            setReviewForm((p) => ({ ...p, rating: next }));
+                            setErrors((p) => ({ ...p, rating: "" }));
+                          }
+                          if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+                            e.preventDefault();
+                            const prev = Math.max(1, reviewForm.rating - 1);
+                            setReviewForm((p) => ({ ...p, rating: prev }));
+                          }
+                        }}
+                        className="p-0.5 transition-transform duration-100 hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4EBD63] focus-visible:ring-offset-1 rounded-sm"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 22" fill="none" className="w-7 h-7 md:w-8 md:h-8" aria-hidden="true">
+                          <path
+                            d="M11.4127 19L4.35926 21.7082L5 14.5L0 8.2918L7 6.5L11.4127 0L15.5 6.5L22.8253 8.2918L18.4661 14.6894V21.7082L11.4127 19Z"
+                            fill={active ? "#4EBD63" : "transparent"}
+                            stroke="#4EBD63"
+                            strokeWidth="1.5"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </button>
+                    );
+                  })}
+                  {reviewForm.rating > 0 && (
+                    <span className="ml-1 txt-p text-[#767676] self-center">
+                      {reviewForm.rating}/5
+                    </span>
+                  )}
+                </div>
+                {errors.rating && (
+                  <span className="text-red-500 font-outfit text-sm">{errors.rating}</span>
+                )}
               </div>
 
               <div className="flex flex-col gap-[6px]">

@@ -745,3 +745,6 @@ ALTER TABLE products ADD COLUMN IF NOT EXISTS sub_label TEXT;
 
 -- Migration: Add support_whatsapp to site_settings table if it doesn't exist
 ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS support_whatsapp TEXT NOT NULL DEFAULT '';
+
+-- Migration: Add image_alt to testimonials table for accessibility/SEO
+ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS image_alt TEXT NOT NULL DEFAULT '';

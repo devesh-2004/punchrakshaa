@@ -8,6 +8,7 @@ const isUuid = (v: unknown): boolean => typeof v === "string" && UUID_RE.test(v)
 
 const COL: Record<string, string> = {
   image: "image",
+  imageAlt: "image_alt",
   videoId: "video_id",
   customerName: "customer_name",
   order: "order_idx",
@@ -18,6 +19,7 @@ function rowToTestimonial(row: Record<string, any>): TestimonialDoc {
   return {
     _id: row.id,
     image: row.image,
+    imageAlt: row.image_alt ?? "",
     videoId: row.video_id,
     customerName: row.customer_name,
     order: Number(row.order_idx ?? 0),

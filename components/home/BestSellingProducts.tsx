@@ -18,8 +18,9 @@ export async function BestSellingProducts() {
       label: p.label,
       subLabel: p.subLabel,
       slug: p.slug,
-      category: p.category || "Piles Medicine", // Placeholder or from schema if added later
+      category: p.category || "Piles Medicine",
       image: p.featuredImage || p.images?.[0]?.url || "/placeholder/product-400.svg",
+      imageAlt: p.images?.[0]?.altText || p.name,
       price: firstPack?.price || p.price,
       mrp: firstPack?.mrp || (p.price + (p.price * p.discountPercent) / 100),
       discountPercent: firstPack?.discountPercent || p.discountPercent,
@@ -32,6 +33,12 @@ export async function BestSellingProducts() {
       cardMaxDiscount: p.cardMaxDiscount || 25,
       featuredLabel: p.featuredLabel || "",
       featuredSubLabel: p.featuredSubLabel || "",
+      allPackOptions: (p.packOptions ?? []).map((pack: any) => ({
+        label: pack.label,
+        price: pack.price,
+        mrp: pack.mrp,
+        discountPercent: pack.discountPercent,
+      })),
     };
   });
 

@@ -16,10 +16,16 @@ import * as reviews from "@/lib/repositories/review.repository";
 import { getGlobal } from "@/lib/repositories/siteSettings.repository";
 import { notFound } from "next/navigation";
 
-export const dynamic = "force-dynamic";
+import { cache } from "react";
+
+export const revalidate = 60;
+
+// React.cache deduplicates this call within the same request — both
+// generateMetadata and the page body share the same DB round-trip.
+const getProduct = cache((slug: string) => products.findBySlug(slug));
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const p = await products.findBySlug(params.slug);
+  const p = await getProduct(params.slug);
   if (!p || p.isArchived) return { title: "Product Not Found" };
 
   const title =
@@ -65,7 +71,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default async function ProductPage({ params }: { params: { slug: string } }) {
-  const productDoc = await products.findBySlug(params.slug);
+  const productDoc = await getProduct(params.slug);
 
   if (!productDoc || productDoc.isArchived) {
     notFound();

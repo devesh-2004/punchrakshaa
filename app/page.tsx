@@ -9,7 +9,7 @@ import { getGlobal } from "@/lib/repositories/siteSettings.repository";
 import { getRecent as getRecentBlogs } from "@/lib/repositories/blog.repository";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export function generateMetadata(): Metadata {
   return {

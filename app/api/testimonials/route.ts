@@ -9,7 +9,9 @@ export async function GET(req: Request) {
   if (limited) return limited;
 
   try {
-    const testimonials = await testimonialsRepo.find({ isActive: true });
+    const url = new URL(req.url);
+    const all = url.searchParams.get("all") === "true";
+    const testimonials = await testimonialsRepo.find(all ? {} : { isActive: true });
     return jsonOk({ testimonials });
   } catch (err) {
     return jsonBad((err as Error).message, 500);

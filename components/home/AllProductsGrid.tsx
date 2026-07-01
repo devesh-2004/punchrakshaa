@@ -30,6 +30,7 @@ export async function AllProductsGrid() {
       image: validImageUrl(p.featuredImage) !== PLACEHOLDER
         ? validImageUrl(p.featuredImage)
         : validImageUrl(p.images?.[0]?.url),
+      imageAlt: p.images?.[0]?.altText || p.name,
       price: firstPack?.price ?? p.price,
       mrp: firstPack?.mrp ?? p.price + (p.price * p.discountPercent) / 100,
       discountPercent: firstPack?.discountPercent ?? p.discountPercent,

@@ -20,8 +20,8 @@ export function ConsultationCTA({
   description = "Our experienced team is here to understand your concerns and provide the right guidance. Whether you have questions about usage, duration, diet, or daily habits, you will receive clear and practical support tailored to your needs. This helps ensure you get the best possible results from our products safely and effectively, with complete confidence and long-term health support.",
   ctaText = "TAKE CONSULTATION NOW",
   ctaLink = "/contact",
-  consultationImage = "/images/homepage/Homepage-content/dr-shail-chauhan-ayurvedic-doctor.webp",
-  consultationImageAlt = "dr Shail Chauhan BAMS Ayurvedic doctor",
+  consultationImage = "/images/homepage/farmer-harvesting-medicinal-herbs-directly-from-the-farm.webp",
+  consultationImageAlt = "farmer harvesting medicinal herbs directly from the farm",
 }: ConsultationCTAProps) {
   return (
     <section className={`w-full ${className}`}>

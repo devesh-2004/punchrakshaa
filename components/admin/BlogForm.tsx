@@ -1,10 +1,22 @@
 "use client";
 
 import Image from "next/image";
-
+import dynamic from "next/dynamic";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+
+const RichTextEditor = dynamic(
+  () => import("./RichTextEditor").then((m) => ({ default: m.RichTextEditor })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="border border-gray-200 rounded-lg min-h-[460px] flex items-center justify-center animate-pulse bg-gray-50">
+        <span className="text-sm text-gray-400">Loading editor…</span>
+      </div>
+    ),
+  }
+);
 
 const REFERENCE_TEMPLATE = `
 <h2>Introduction</h2>
@@ -102,9 +114,16 @@ export function BlogForm({ existingBlog, duplicateSlug }: { existingBlog?: any; 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate that the rich-text editor has actual content (not just <p></p>)
+    const hasContent = content.replace(/<[^>]*>/g, "").trim().length > 0;
+    if (!hasContent) {
+      toast.error("Main content cannot be empty");
+      return;
+    }
+
     setLoading(true);
-    
-    // Convert current fields
+
     const body = { title, slug, excerpt, content, coverImage, coverImageAlt, author, publishedAt, suggestedProductIds };
     
     try {
@@ -247,12 +266,18 @@ export function BlogForm({ existingBlog, duplicateSlug }: { existingBlog?: any; 
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <label className="block text-sm font-medium text-gray-700">Main Content (HTML) <span className="text-red-500">*</span></label>
-          <button type="button" onClick={() => setContent(REFERENCE_TEMPLATE)} className="text-xs bg-gray-100 hover:bg-[#045830] hover:text-white text-gray-700 px-3 py-1.5 rounded font-medium transition cursor-pointer">
+          <label className="block text-sm font-medium text-gray-700">
+            Main Content <span className="text-red-500">*</span>
+          </label>
+          <button
+            type="button"
+            onClick={() => setContent(REFERENCE_TEMPLATE)}
+            className="text-xs bg-gray-100 hover:bg-[#045830] hover:text-white text-gray-700 px-3 py-1.5 rounded font-medium transition cursor-pointer"
+          >
             + Insert Reference Template
           </button>
         </div>
-        <textarea required rows={15} value={content} onChange={(e) => setContent(e.target.value)} className="w-full border rounded-lg px-4 py-3 font-mono text-sm leading-relaxed" placeholder="<h2>Your Title</h2><p>Article body...</p>" />
+        <RichTextEditor value={content} onChange={setContent} />
       </div>
 
       <div className="pt-4 border-t border-gray-100 flex justify-end">

@@ -266,6 +266,11 @@ body {
     .select-box-img     { height: 252px !important; width: 252px !important; }
   }
 
+  /* ── ~1920×1080 only — arrow nudged 2px down for visual centering ── */
+  @media (min-width: 1900px) and (max-width: 2200px) {
+    .nav-arrow { margin-top: 7px; }
+  }
+
 }
 
 /* Premium Prose Table Styles for Blogs */

@@ -8,13 +8,14 @@ import { Plus, Pencil, Trash2, X, ChevronUp, ChevronDown, Youtube, Upload, Loade
 interface Testimonial {
   _id: string;
   image: string;
+  imageAlt: string;
   videoId: string;
   customerName: string;
   order: number;
   isActive: boolean;
 }
 
-const EMPTY_FORM = { image: "", videoId: "", customerName: "", isActive: true };
+const EMPTY_FORM = { image: "", imageAlt: "", videoId: "", customerName: "", isActive: true };
 
 export default function AdminTestimonialsPage() {
   const [items, setItems] = useState<Testimonial[]>([]);
@@ -48,7 +49,7 @@ export default function AdminTestimonialsPage() {
   };
 
   const openEdit = (t: Testimonial) => {
-    setForm({ image: t.image, videoId: t.videoId, customerName: t.customerName, isActive: t.isActive });
+    setForm({ image: t.image, imageAlt: t.imageAlt || "", videoId: t.videoId, customerName: t.customerName, isActive: t.isActive });
     setEditTarget(t);
     setModalMode("edit");
   };
@@ -334,6 +335,21 @@ export default function AdminTestimonialsPage() {
                   placeholder="e.g. Rajesh Sharma"
                   className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#045830] transition"
                 />
+              </div>
+
+              {/* Thumbnail Image Alt Text */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Thumbnail Image Alt Text <span className="text-gray-400 font-normal">(optional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={form.imageAlt}
+                  onChange={(e) => setForm((f) => ({ ...f, imageAlt: e.target.value }))}
+                  placeholder="e.g. Customer testimonial about Constipation Relief Powder"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#045830] transition"
+                />
+                <p className="text-xs text-gray-400 mt-1">Used for accessibility and SEO. Falls back to customer name if empty.</p>
               </div>
 
               {/* Homepage toggle */}

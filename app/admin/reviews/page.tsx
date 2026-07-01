@@ -278,7 +278,7 @@ export default function AdminReviewsPage() {
                           <button
                             onClick={() => handleStatusChange(r._id, "approved")}
                             disabled={actionLoading === r._id + "approved"}
-                            title="Approve"
+                            title="Verify"
                             className="p-1.5 rounded-lg text-green-600 hover:bg-green-50 transition disabled:opacity-50"
                           >
                             <Check size={16} />

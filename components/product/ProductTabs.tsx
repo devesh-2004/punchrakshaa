@@ -185,7 +185,7 @@ function IngredientsTab({ product, ingredients }: { product?: any; ingredients: 
     <div className="animate-fadeIn">
       <div className="pb-[20px] md:pb-[30px]">
         <h2 className="font-outfit txt-h2  md:txt-h2 !font-semibold text-[#111] mb-[15px] md:mb-[30px]">
-          Ingredients used in {product?.name || "PunchRaksha piles medicine"}.
+          {product?.ingredientsHeading || "Ingredients"}
         </h2>
         <p className="text-[#121212] txt-p-lg">
           PunchRaksha is a potent blend of 100% natural and herbal ingredients, and designed to address the underlying causes of digestive distress and eliminate piles from the roots.
@@ -554,14 +554,14 @@ export function ProductTabs({ product, className = "" }: { product?: any, classN
         return (
           <div className="animate-fadeIn">
             <h2 className="font-outfit txt-h2 !font-semibold text-[#111] mb-[15px] md:mb-[30px]">
-              {(productDetails as any).tabTitle || `About ${product?.name || "PunchRaksha"}`}
+              {(productDetails as any).tabTitle || "Product Details"}
             </h2>
 
             <div className="space-y-[15px] md:space-y-[20px] text-[#121212]">
 
               <p className="txt-p-lg"><b className="font-semibold">Brand:</b> {productDetails.brand || "PunchRaksha"}</p>
 
-              <p className="txt-p-lg"><b className="font-semibold">Product:</b> {(productDetails as any).productLabel || product?.name || "Piles Relief Tablet"}</p>
+              <p className="txt-p-lg"><b className="font-semibold">Product:</b> {(productDetails as any).productLabel || `About ${product?.name || "PunchRaksha"}`}</p>
 
               {productDetails.fullDescription && (
                 <p className="txt-p-lg"><b className="font-semibold">Description: </b>
@@ -573,7 +573,9 @@ export function ProductTabs({ product, className = "" }: { product?: any, classN
 
               <p className="txt-p-lg"><b className="font-semibold">Dosage Form:</b> {productDetails.dosageForm}</p>
 
-              <p className="txt-p-lg"><b className="font-semibold">Net Quantity:</b> {productDetails.netQuantity}</p>
+              {productDetails.netQuantity && (
+                <p className="txt-p-lg"><b className="font-semibold">Net Quantity:</b> {productDetails.netQuantity}</p>
+              )}
 
               {(productDetails as any).taste && (
                 <p className="txt-p-lg"><b className="font-semibold">Taste:</b> {(productDetails as any).taste}</p>

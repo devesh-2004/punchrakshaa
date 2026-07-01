@@ -22,13 +22,14 @@ export async function POST(req: Request) {
     const admin = await requireAdmin();
     if (!admin) return jsonBad("Unauthorized", 401);
 
-    const { image, videoId, customerName, isActive } = await req.json();
+    const { image, imageAlt, videoId, customerName, isActive } = await req.json();
 
     if (!image || !videoId) return jsonBad("Image and YouTube Video ID are required", 400);
 
     const count = await testimonialsRepo.countDocuments();
     const testimonial = await testimonialsRepo.create({
       image,
+      imageAlt: imageAlt || "",
       videoId: videoId.trim(),
       customerName: customerName || "",
       order: count,
