@@ -654,7 +654,7 @@ export function ProductTabs({ product, className = "" }: { product?: any, classN
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-[15px] py-[0px] md:px-[15px] md:py-2.5
-                font-medium btn-radius-5 md:font-medium tracking-[0.033em] transition-all h-[50px] md:h-[55px] flex-shrink-0 whitespace-nowrap border ${activeTab === tab
+                font-semibold btn-radius-5 md:font-medium tracking-[0.033em] transition-all h-[50px] md:h-[55px] flex-shrink-0 whitespace-nowrap border ${activeTab === tab
                   ? "bg-[#3D8F45] text-white border-[#439665]"
                   : "bg-[#eaf5ef] text-[#121212] border-[#121212] border-opacity-35 hover:bg-[#dff0e6]"
                 } txt-p-lg md:txt-p-lg`}

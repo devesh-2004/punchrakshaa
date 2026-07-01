@@ -42,7 +42,7 @@ export default function SafeImage({
   fallbackSrc = FALLBACK_IMAGE,
   alt,
   onError,
-  unoptimized,
+  unoptimized = true,
   ...rest
 }: SafeImageProps) {
   const resolve = (value?: string | null) => (isUsable(value) ? value.trim() : fallbackSrc);
@@ -55,8 +55,6 @@ export default function SafeImage({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [src, fallbackSrc]);
 
-  const isExternal = /^https?:\/\//i.test(currentSrc);
-  const isData = currentSrc.startsWith("data:");
   const isFallback = currentSrc === fallbackSrc;
 
   return (
@@ -64,9 +62,9 @@ export default function SafeImage({
       {...rest}
       src={currentSrc}
       alt={alt ?? ""}
-      // Bypass the optimizer for arbitrary external/data URLs so unconfigured
-      // hosts can never crash the render; local assets stay optimized.
-      unoptimized={unoptimized ?? (isExternal || isData)}
+      // Always unoptimized — images are served directly (public folder WebP stays WebP,
+      // R2 images served as uploaded). No /_next/image Lambda invocations = no cost.
+      unoptimized={unoptimized}
       onError={(event) => {
         if (!isFallback) setCurrentSrc(fallbackSrc);
         onError?.(event);

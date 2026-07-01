@@ -224,6 +224,11 @@ body {
     .address-input  { height: 75px !important; }
   }
 
+  /* ── Sticky Buy Footer: 85% width only at ~1540px (avoids 1440px and 1920px) ── */
+  @media (min-width: 1490px) and (max-width: 1600px) {
+    .sticky-bar-inner { max-width: 85% !important; }
+  }
+
 
   /* ── Desktop: 1541px+ ── */
   @media (min-width: 1541px) {

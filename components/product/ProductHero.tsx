@@ -553,13 +553,17 @@ export function ProductHero({ product, promoText, overallRating, totalReviews }:
                     "Eradicate the root causes of Piles with scientifically-backed Ayurvedic Solution."}
                 </p>
 
-                <div className="mt-[10px] md:mt-[20px] flex items-center gap-3 order-1 xl:order-3">
+                <button
+                  type="button"
+                  onClick={() => document.getElementById("customer-reviews")?.scrollIntoView({ behavior: "smooth" })}
+                  className="mt-[10px] md:mt-[20px] flex items-center gap-3 order-1 xl:order-3 cursor-pointer bg-transparent border-none p-0"
+                >
                   <StarRating value={overallRating ?? product?.overallRating ?? 0} />
                   <div className="pt-[2px] product-rating star-rating !pl-[0px]">
                     {(overallRating ?? product?.overallRating ?? 0).toFixed(1)} rating |{" "}
                     {(totalReviews ?? product?.totalReviews ?? 0)} review{(totalReviews ?? product?.totalReviews ?? 0) !== 1 ? "s" : ""}
                   </div>
-                </div>
+                </button>
                 {/* Dynamic Product Tags */}
                 {product?.tags && product.tags.length > 0 && (
                   <div className="mt-[15px] md:mt-[20px] flex flex-wrap gap-2 order-3 md:gap-3 xl:order-2">
@@ -701,10 +705,11 @@ export function ProductHero({ product, promoText, overallRating, totalReviews }:
               <div className="mt-[15px] md:mt-[20px] flex flex-col items-start gap-2 w-full">
                 <p className="txt-p-lg xl:hidden">Quantity:</p>
                 <div className="flex w-full items-stretch gap-4">
-                  <div className="inline-flex min-h-[56px] w-[118px] md:w-[163px] shrink-0 items-center justify-between border border-[#121212] rounded-[5px] bg-[#f9faf9] px-4 py-[15px] shadow-sm">
+                  <div className="inline-flex min-h-[56px] w-[118px] md:w-[163px] shrink-0 items-center justify-between border border-[#121212] rounded-[5px] bg-[#f9faf9] px-2 py-[15px] shadow-sm">
                     <button
-                      className="txt-p-lg font-outfit text-[#121212]"
+                      className="flex-1 self-stretch p-2 flex items-center justify-center txt-p-lg font-outfit text-[#121212]"
                       onClick={() => setQty((q) => Math.max(1, q - 1))}
+                      aria-label="Decrease quantity"
                     >
                       <SafeImage
                         src="/images/homepage/minus.svg"
@@ -717,8 +722,9 @@ export function ProductHero({ product, promoText, overallRating, totalReviews }:
                       {qty}
                     </span>
                     <button
-                      className="txt-p-lg font-outfit text-[#121212]"
+                      className="flex-1 self-stretch p-2 flex items-center justify-center txt-p-lg font-outfit text-[#121212]"
                       onClick={() => setQty((q) => Math.min(99, q + 1))}
+                      aria-label="Increase quantity"
                     >
                       <SafeImage
                         src="/images/homepage/plus.svg"

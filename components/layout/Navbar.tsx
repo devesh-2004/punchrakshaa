@@ -146,10 +146,10 @@ export function Navbar() {
                   <hr className="w-max-[221px] border-t border-[#000000] my-5" />
                   <Link
                     href="/all-products"
-                    className="relative flex items-center gap-1 text-[#045830] font-outfit font-medium after:absolute after:-bottom-2 after:left-0 after:h-[1.5px] after:w-0 hover:after:w-full after:bg-[#045830] after:transition-all after:duration-300 group/op"
+                    className="self-start relative flex items-center gap-1 text-[#045830] font-outfit font-medium after:absolute after:-bottom-2 after:left-0 after:h-[1.5px] after:w-0 hover:after:w-full after:bg-[#045830] after:transition-all after:duration-300 group/op"
                   >
                     <span className="leading-none">Other Products</span>
-                    <IconChevronRight className="w-4 h-4" />
+                    <IconChevronRight className="w-4 h-4 text-[#045830]" />
                   </Link>
                 </div>
               </div>

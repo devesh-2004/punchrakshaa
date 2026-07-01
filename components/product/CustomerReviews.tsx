@@ -165,7 +165,7 @@ export function CustomerReviews({
   };
 
   return (
-    <section className="w-full bg-white p-90-60-45">
+    <section id="customer-reviews" className="w-full bg-white p-90-60-45">
       {/* Narrow centered container matching the reference */}
       <div className="px-[15px] w-full md:w-[80%] mx-auto">
 
@@ -287,7 +287,7 @@ export function CustomerReviews({
         <div className="fixed inset-0 z-[100] bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-[20px] w-full max-w-[480px] p-[24px] shadow-lg">
             <div className="flex items-center justify-between mb-[20px]">
-              <h3 className="font-outfit txt-h3-lg font-semibold text-[#121212]">Write Review</h3>
+              <h4 className="font-outfit txt-h3-lg font-semibold text-[#121212]">Write Review</h4>
               <button onClick={() => setIsModalOpen(false)} className="w-[32px] h-[32px] flex items-center justify-center rounded-full border border-[#E5E5E5] text-[#767676] hover:bg-gray-100 transition-colors">
                 <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
                   <path d="M13 1L1 13M1 1L13 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

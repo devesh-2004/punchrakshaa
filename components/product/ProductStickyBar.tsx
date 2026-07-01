@@ -72,9 +72,9 @@ export function ProductStickyBar({ product }: { product: any }) {
 
   return (
     <div
-      className="fixed bottom-0 left-0 w-full bg-white z-[50] border-[1.5px] border-[#000000] shadow-[0_-8px_24px_rgba(0,0,0,0.12)]"
+      className="fixed bottom-0 left-0 w-full bg-white z-[50] border-t border-t-[#000000] shadow-[0_-8px_24px_rgba(0,0,0,0.12)]"
     >
-      <div className="md:mx-auto md:max-w-[80%] px-[15px] xl:px-50 py-[15px] md:py-[20px] flex items-center justify-between gap-3 xl:gap-[20px]">
+      <div className="sticky-bar-inner md:mx-auto md:max-w-[80%] px-[15px] xl:px-50 py-[15px] md:py-[20px] flex items-center justify-between gap-3 xl:gap-[20px]">
 
         {/* ── Brand Section (Hidden on Mobile) ── */}
         <div className="hidden xl:flex items-center gap-[20px] shrink-0">
