@@ -16,6 +16,8 @@ declare global {
   var _pgPool: Cached | undefined;
 }
 
+// In Next.js dev (Fast Refresh), modules re-execute but `global` persists
+// across reloads — this prevents a new Pool being created on every HMR cycle.
 const cached: Cached = global._pgPool ?? { pool: null };
 global._pgPool = cached;
 
@@ -29,8 +31,20 @@ export function getPool(): Pool {
     connectionString: DATABASE_URL,
     ssl: isLocal ? undefined : { rejectUnauthorized: false },
     max: 10,
+    min: 0,
     idleTimeoutMillis: 30_000,
+    // Fail fast when the pool is exhausted — prevents request pileup that
+    // drives connection demand beyond what the server allows.
+    connectionTimeoutMillis: 10_000,
   });
+
+  // Without this handler, errors on idle pool clients crash the process via
+  // an uncaught exception, leaving connections in an unknown state.
+  cached.pool.on("error", (err) => {
+    // eslint-disable-next-line no-console
+    console.error("[pg pool] idle client error:", err.message);
+  });
+
   return cached.pool;
 }
 
@@ -63,15 +77,19 @@ export async function one<T extends QueryResultRow = QueryResultRow>(
 /** Run a function inside a transaction, committing on success and rolling back on error. */
 export async function withTransaction<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> {
   const client = await getPool().connect();
+  let txError: unknown;
   try {
     await client.query("BEGIN");
     const result = await fn(client);
     await client.query("COMMIT");
     return result;
   } catch (err) {
-    await client.query("ROLLBACK");
+    txError = err;
+    try { await client.query("ROLLBACK"); } catch { /* connection already broken */ }
     throw err;
   } finally {
-    client.release();
+    // Pass the error so the pool destroys a broken connection rather than
+    // recycling it — prevents "too many clients" from leaking bad clients.
+    client.release(txError as Error | undefined);
   }
 }
